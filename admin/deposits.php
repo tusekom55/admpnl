@@ -1,5 +1,4 @@
 <?php
-require_once '../includes/functions.php';
 require_once 'includes/admin_auth.php';
 
 requireAdmin();
