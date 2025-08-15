@@ -1,6 +1,6 @@
 <?php
 // Admin authentication and security
-require_once '../includes/functions.php';
+require_once '../includes/functions_simple.php';
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
