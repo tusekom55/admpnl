@@ -1,7 +1,7 @@
 <?php
-require_once 'config/database.php';
-require_once 'config/api_keys.php';
-require_once 'config/languages.php';
+require_once '../config/database.php';
+require_once '../config/api_keys.php';
+require_once '../config/languages.php';
 
 // Start session if not already started
 if (session_status() == PHP_SESSION_NONE) {
