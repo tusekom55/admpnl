@@ -101,7 +101,7 @@ $pending_deposits = $stmt->fetch(PDO::FETCH_ASSOC)['pending_deposits'];
         </div>
 
         <div class="row mt-4">
-            <div class="col-md-6">
+            <div class="col-md-6 col-lg-4">
                 <div class="card">
                     <div class="card-header">
                         <h5><i class="fas fa-users"></i> Kullanıcı Yönetimi</h5>
@@ -115,15 +115,73 @@ $pending_deposits = $stmt->fetch(PDO::FETCH_ASSOC)['pending_deposits'];
                 </div>
             </div>
             
-            <div class="col-md-6">
+            <div class="col-md-6 col-lg-4">
                 <div class="card">
                     <div class="card-header">
-                        <h5><i class="fas fa-money-bill"></i> Para Yatırma Onayları</h5>
+                        <h5><i class="fas fa-money-bill"></i> Para Yatırma</h5>
                     </div>
                     <div class="card-body">
                         <p>Bekleyen para yatırma taleplerini onaylayın</p>
                         <a href="admin_deposits.php" class="btn btn-success">
-                            <i class="fas fa-arrow-right"></i> Onayları Görüntüle
+                            <i class="fas fa-arrow-right"></i> Yatırma Onayları
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-money-bill-wave"></i> Para Çekme</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Bekleyen para çekme taleplerini onaylayın</p>
+                        <a href="admin_withdrawals.php" class="btn btn-danger">
+                            <i class="fas fa-arrow-right"></i> Çekme Onayları
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-exchange-alt"></i> İşlem Yönetimi</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Tüm işlemleri görüntüle ve yönet</p>
+                        <a href="admin_transactions.php" class="btn btn-info">
+                            <i class="fas fa-arrow-right"></i> İşlemleri Görüntüle
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-line"></i> Market Yönetimi</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Semboller ve fiyatları yönet</p>
+                        <a href="admin_markets.php" class="btn btn-warning">
+                            <i class="fas fa-arrow-right"></i> Marketleri Yönet
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-cogs"></i> Sistem Ayarları</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Platform ayarları ve konfigürasyon</p>
+                        <a href="admin_settings.php" class="btn btn-secondary">
+                            <i class="fas fa-arrow-right"></i> Ayarları Düzenle
                         </a>
                     </div>
                 </div>
