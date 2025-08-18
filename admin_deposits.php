@@ -106,44 +106,23 @@ try {
     $payment_methods_exists = false;
 }
 
-// Bekleyen depositleri getir
-if ($payment_methods_exists) {
-    $query = "SELECT d.*, u.username, u.email, 
-                     pm.name as payment_method_name, pm.type as payment_method_type, pm.code as payment_method_code
-              FROM deposits d 
-              LEFT JOIN users u ON d.user_id = u.id 
-              LEFT JOIN payment_methods pm ON d.payment_method_id = pm.id
-              WHERE d.status = 'pending' 
-              ORDER BY d.created_at DESC";
-} else {
-    $query = "SELECT d.*, u.username, u.email
-              FROM deposits d 
-              LEFT JOIN users u ON d.user_id = u.id 
-              WHERE d.status = 'pending' 
-              ORDER BY d.created_at DESC";
-}
+// Bekleyen depositleri getir - payment_method_id kolonu yoksa basit sorgu kullan
+$query = "SELECT d.*, u.username, u.email
+          FROM deposits d 
+          LEFT JOIN users u ON d.user_id = u.id 
+          WHERE d.status = 'pending' 
+          ORDER BY d.created_at DESC";
 $stmt = $db->prepare($query);
 $stmt->execute();
 $pending_deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Son işlemleri getir
-if ($payment_methods_exists) {
-    $query = "SELECT d.*, u.username, u.email, 
-                     pm.name as payment_method_name, pm.type as payment_method_type, pm.code as payment_method_code
-              FROM deposits d 
-              LEFT JOIN users u ON d.user_id = u.id 
-              LEFT JOIN payment_methods pm ON d.payment_method_id = pm.id
-              WHERE d.status IN ('approved', 'rejected') 
-              ORDER BY d.processed_at DESC 
-              LIMIT 20";
-} else {
-    $query = "SELECT d.*, u.username, u.email
-              FROM deposits d 
-              LEFT JOIN users u ON d.user_id = u.id 
-              WHERE d.status IN ('approved', 'rejected') 
-              ORDER BY d.processed_at DESC 
-              LIMIT 20";
-}
+// Son işlemleri getir - payment_method_id kolonu yoksa basit sorgu kullan
+$query = "SELECT d.*, u.username, u.email
+          FROM deposits d 
+          LEFT JOIN users u ON d.user_id = u.id 
+          WHERE d.status IN ('approved', 'rejected') 
+          ORDER BY d.processed_at DESC 
+          LIMIT 20";
 $stmt = $db->prepare($query);
 $stmt->execute();
 $recent_deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
