@@ -348,7 +348,7 @@ include 'includes/header.php';
 
 <!-- Mobile Trading Modal -->
 <div class="modal fade" id="mobileTradeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-responsive-trading">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="d-flex align-items-center">
@@ -610,6 +610,132 @@ include 'includes/header.php';
 @media (min-width: 992px) {
     .mobile-chart-tabs {
         display: none !important;
+    }
+}
+
+/* RESPONSIVE TRADING MODAL SIZING */
+.modal-responsive-trading {
+    max-width: 900px;
+}
+
+@media (max-width: 768px) {
+    .modal-responsive-trading {
+        max-width: 100%;
+        margin: 0;
+        height: 100vh;
+    }
+    
+    .modal-responsive-trading .modal-content {
+        height: 100vh;
+        border-radius: 0;
+        border: none;
+    }
+    
+    .modal-responsive-trading .modal-header {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+        flex-shrink: 0;
+    }
+    
+    .modal-responsive-trading .modal-body {
+        padding: 0;
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .modal-responsive-trading .modal-title {
+        font-size: 1.1rem;
+    }
+    
+    /* Mobile tab content optimization */
+    .modal-responsive-trading .mobile-tab-content {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Touch-friendly buttons and inputs */
+    .modal-responsive-trading .btn {
+        min-height: 48px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .modal-responsive-trading .form-control,
+    .modal-responsive-trading .form-select {
+        min-height: 48px;
+        font-size: 1rem;
+    }
+    
+    .modal-responsive-trading .input-group-text {
+        min-height: 48px;
+        font-size: 1rem;
+    }
+    
+    /* Better spacing for trading forms */
+    .modal-responsive-trading .trading-container-mobile {
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .modal-responsive-trading .chart-container-mobile {
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    /* Tab navigation improvements */
+    .modal-responsive-trading .nav-tabs {
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+    
+    .modal-responsive-trading .nav-tabs .nav-link {
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        border: none;
+        border-bottom: 3px solid transparent;
+        background: none;
+        color: #6c757d;
+        border-radius: 0;
+    }
+    
+    .modal-responsive-trading .nav-tabs .nav-link.active {
+        color: #007bff;
+        background: none;
+        border-bottom-color: #007bff;
+    }
+    
+    /* Chart container optimization */
+    .modal-responsive-trading .chart-container iframe {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 350px;
+    }
+}
+
+/* Desktop modal optimization */
+@media (min-width: 769px) {
+    .modal-responsive-trading {
+        max-width: 900px;
+        margin: 1.75rem auto;
+    }
+    
+    .modal-responsive-trading .modal-content {
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .modal-responsive-trading .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .modal-responsive-trading .modal-body {
+        padding: 1.5rem;
     }
 }
 </style>

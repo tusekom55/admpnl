@@ -697,6 +697,140 @@ foreach($_SESSION as $session_key => $session_value) {
         display: none !important;
     }
 }
+
+/* RESPONSIVE MODAL SIZING */
+/* AL/SAT Modal - Compact for both mobile and desktop */
+.modal-responsive {
+    max-width: 500px;
+}
+
+@media (max-width: 576px) {
+    .modal-responsive {
+        max-width: 95%;
+        margin: 0.5rem auto;
+    }
+    
+    .modal-responsive .modal-content {
+        margin: 0;
+        border-radius: 12px;
+    }
+    
+    .modal-responsive .modal-header {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .modal-responsive .modal-body {
+        padding: 1rem;
+    }
+    
+    .modal-responsive .modal-title {
+        font-size: 1.1rem;
+    }
+    
+    /* Touch-friendly buttons */
+    .modal-responsive .btn {
+        min-height: 48px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    /* Compact form inputs */
+    .modal-responsive .form-control {
+        min-height: 48px;
+        font-size: 1rem;
+    }
+    
+    .modal-responsive .input-group-text {
+        min-height: 48px;
+        font-size: 1rem;
+    }
+}
+
+/* KALDIRAÇ Modal - Larger but still responsive */
+.modal-responsive-leverage {
+    max-width: 700px;
+}
+
+@media (max-width: 768px) {
+    .modal-responsive-leverage {
+        max-width: 95%;
+        margin: 0.5rem auto;
+    }
+    
+    .modal-responsive-leverage .modal-content {
+        margin: 0;
+        border-radius: 12px;
+    }
+    
+    .modal-responsive-leverage .modal-header {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .modal-responsive-leverage .modal-body {
+        padding: 1rem;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    .modal-responsive-leverage .modal-title {
+        font-size: 1.1rem;
+    }
+    
+    /* Stack leverage form columns on mobile */
+    .modal-responsive-leverage .row > .col-md-6 {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Touch-friendly buttons */
+    .modal-responsive-leverage .btn {
+        min-height: 48px;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+    
+    /* Compact form inputs */
+    .modal-responsive-leverage .form-control,
+    .modal-responsive-leverage .form-select {
+        min-height: 48px;
+        font-size: 1rem;
+    }
+    
+    .modal-responsive-leverage .input-group-text {
+        min-height: 48px;
+        font-size: 1rem;
+    }
+    
+    /* Compact calculation cards */
+    .modal-responsive-leverage .card-body {
+        padding: 0.75rem;
+    }
+    
+    /* Better spacing for calculation grid */
+    .modal-responsive-leverage .row.text-center .col-6,
+    .modal-responsive-leverage .row.text-center .col-md-3 {
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+    }
+    
+    /* Alert box optimization */
+    .modal-responsive-leverage .alert {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Better modal backdrop for mobile */
+@media (max-width: 768px) {
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+    
+    .modal.fade .modal-dialog {
+        transition: transform 0.2s ease-out;
+    }
+}
 </style>
 
 <script>
@@ -1148,7 +1282,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- SIMPLE Trading Modal -->
 <div class="modal fade" id="tradeModal" tabindex="-1" aria-labelledby="tradeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-responsive">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="d-flex align-items-center">
@@ -1225,7 +1359,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- LEVERAGE Trading Modal -->
 <div class="modal fade" id="leverageModal" tabindex="-1" aria-labelledby="leverageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-responsive-leverage">
         <div class="modal-content">
             <div class="modal-header bg-warning text-dark">
                 <div class="d-flex align-items-center">
