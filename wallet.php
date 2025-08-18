@@ -76,11 +76,28 @@ if ($_POST) {
     }
 }
 
-// Get user balances
+// Get trading currency settings and USD/TRY rate
+$trading_currency = getTradingCurrency();
+$currency_field = getCurrencyField($trading_currency);
+$currency_symbol = getCurrencySymbol($trading_currency);
+$usd_try_rate = getUSDTRYRate();
+
+// Get user balances based on trading currency
 $balance_tl = getUserBalance($user_id, 'tl');
 $balance_usd = getUserBalance($user_id, 'usd');
-$balance_btc = getUserBalance($user_id, 'btc');
-$balance_eth = getUserBalance($user_id, 'eth');
+
+// Set primary balance based on trading currency
+if ($trading_currency == 1) { // TL Mode
+    $primary_balance = $balance_tl;
+    $primary_currency = 'TL';
+    $secondary_balance = $balance_usd;
+    $secondary_currency = 'USD';
+} else { // USD Mode  
+    $primary_balance = $balance_usd;
+    $primary_currency = 'USD';
+    $secondary_balance = $balance_tl;
+    $secondary_currency = 'TL';
+}
 
 // Get recent deposits and withdrawals
 $database = new Database();
@@ -128,36 +145,48 @@ include 'includes/header.php';
                     <h4 class="mb-0"><?php echo t('wallet'); ?></h4>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 col-6 mb-3">
-                            <div class="text-center p-3 bg-success bg-opacity-10 rounded border border-success">
-                                <i class="fas fa-lira-sign fa-2x text-success mb-2"></i>
-                                <div class="h4 mb-1 text-success"><?php echo formatNumber($balance_tl); ?></div>
-                                <small class="text-success">Türk Lirası</small>
+                    <div class="row justify-content-center">
+                        <!-- Primary Currency (Based on Trading Parameter) -->
+                        <div class="col-md-6 col-12 mb-3">
+                            <div class="text-center p-4 bg-success bg-opacity-10 rounded border border-success">
+                                <i class="fas fa-<?php echo $trading_currency == 1 ? 'lira-sign' : 'dollar-sign'; ?> fa-3x text-success mb-3"></i>
+                                <div class="h3 mb-1 text-success"><?php echo formatNumber($primary_balance); ?></div>
+                                <div class="h6 text-success">
+                                    <?php echo $trading_currency == 1 ? 'Türk Lirası' : 'US Dollar'; ?>
+                                </div>
+                                <small class="text-success fw-bold">Ana Bakiye</small>
                             </div>
                         </div>
-                        <div class="col-md-3 col-6 mb-3">
-                            <div class="text-center p-3 bg-light rounded">
-                                <i class="fas fa-dollar-sign fa-2x text-success mb-2"></i>
-                                <div class="h4 mb-1"><?php echo formatNumber($balance_usd); ?></div>
-                                <small class="text-muted">US Dollar</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-6 mb-3">
-                            <div class="text-center p-3 bg-light rounded">
-                                <i class="fab fa-bitcoin fa-2x text-warning mb-2"></i>
-                                <div class="h4 mb-1"><?php echo formatPrice($balance_btc); ?></div>
-                                <small class="text-muted">Bitcoin</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-6 mb-3">
-                            <div class="text-center p-3 bg-light rounded">
-                                <i class="fab fa-ethereum fa-2x text-info mb-2"></i>
-                                <div class="h4 mb-1"><?php echo formatPrice($balance_eth); ?></div>
-                                <small class="text-muted">Ethereum</small>
+                        
+                        <!-- Secondary Currency -->
+                        <div class="col-md-6 col-12 mb-3">
+                            <div class="text-center p-4 bg-light rounded border">
+                                <i class="fas fa-<?php echo $trading_currency == 1 ? 'dollar-sign' : 'lira-sign'; ?> fa-2x text-muted mb-3"></i>
+                                <div class="h4 mb-1"><?php echo formatNumber($secondary_balance); ?></div>
+                                <div class="h6 text-muted">
+                                    <?php echo $trading_currency == 1 ? 'US Dollar' : 'Türk Lirası'; ?>
+                                </div>
+                                <small class="text-muted">
+                                    <?php if ($trading_currency == 1): ?>
+                                        ≈ <?php echo formatNumber($secondary_balance * $usd_try_rate); ?> TL
+                                    <?php else: ?>
+                                        ≈ <?php echo formatNumber($secondary_balance / $usd_try_rate); ?> USD
+                                    <?php endif; ?>
+                                </small>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Exchange Rate Info -->
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-exchange-alt me-1"></i>
+                            1 USD = <?php echo formatNumber($usd_try_rate, 4); ?> TL
+                            <span class="ms-2">|</span>
+                            <span class="ms-2">1 TL = <?php echo formatNumber(1 / $usd_try_rate, 4); ?> USD</span>
+                        </small>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -200,13 +229,19 @@ include 'includes/header.php';
                                     <label class="form-label"><?php echo getCurrentLang() == 'tr' ? 'Yatırılacak Tutar' : 'Deposit Amount'; ?></label>
                                     <div class="input-group">
                                         <input type="number" class="form-control" name="amount" step="0.01" 
-                                               min="<?php echo MIN_DEPOSIT_AMOUNT; ?>" required>
-                                        <span class="input-group-text">TL</span>
+                                               min="<?php echo MIN_DEPOSIT_AMOUNT; ?>" id="depositAmount" 
+                                               oninput="calculateDepositConversion()" required>
+                                        <span class="input-group-text" id="depositCurrencySymbol">
+                                            <?php echo $trading_currency == 1 ? 'TL' : 'USD'; ?>
+                                        </span>
                                     </div>
-                                    <small class="text-muted">
-                                        <?php echo getCurrentLang() == 'tr' ? 'Minimum:' : 'Minimum:'; ?> 
-                                        <?php echo MIN_DEPOSIT_AMOUNT; ?> TL
-                                    </small>
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">
+                                            <?php echo getCurrentLang() == 'tr' ? 'Minimum:' : 'Minimum:'; ?> 
+                                            <?php echo MIN_DEPOSIT_AMOUNT; ?> <?php echo $trading_currency == 1 ? 'TL' : 'USD'; ?>
+                                        </small>
+                                        <small class="text-info" id="depositConversion"></small>
+                                    </div>
                                 </div>
                                 
                                 <div class="mb-3">
@@ -291,20 +326,31 @@ include 'includes/header.php';
                                     <label class="form-label">Çekilecek Tutar</label>
                                     <div class="input-group">
                                         <input type="number" class="form-control" name="amount" 
-                                               step="10" min="<?php echo MIN_WITHDRAWAL_AMOUNT; ?>" 
-                                               max="<?php echo $balance_tl; ?>" 
-                                               placeholder="<?php echo MIN_WITHDRAWAL_AMOUNT; ?>" required>
-                                        <span class="input-group-text">TL</span>
+                                               step="<?php echo $trading_currency == 1 ? '10' : '1'; ?>" 
+                                               min="<?php echo MIN_WITHDRAWAL_AMOUNT; ?>" 
+                                               max="<?php echo $primary_balance; ?>" 
+                                               placeholder="<?php echo MIN_WITHDRAWAL_AMOUNT; ?>" 
+                                               id="withdrawAmount" oninput="calculateWithdrawConversion()" required>
+                                        <span class="input-group-text">
+                                            <?php echo $trading_currency == 1 ? 'TL' : 'USD'; ?>
+                                        </span>
                                     </div>
                                     <div class="d-flex justify-content-between mt-1">
                                         <small class="text-muted">
-                                            Kullanılabilir: <?php echo formatNumber($balance_tl); ?> TL
+                                            Kullanılabilir: <?php echo formatNumber($primary_balance); ?> <?php echo $primary_currency; ?>
                                         </small>
-                                        <div>
-                                            <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="setAmount(100)">100</button>
-                                            <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="setAmount(500)">500</button>
-                                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(1000)">1000</button>
-                                        </div>
+                                        <small class="text-info" id="withdrawConversion"></small>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <?php if ($trading_currency == 1): ?>
+                                        <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="setAmount(100)">100</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="setAmount(500)">500</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(1000)">1000</button>
+                                        <?php else: ?>
+                                        <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="setAmount(10)">10</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="setAmount(50)">50</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(100)">100</button>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
 
@@ -575,12 +621,84 @@ include 'includes/header.php';
 </style>
 
 <script>
+// Trading currency and exchange rate constants from PHP
+const TRADING_CURRENCY = <?php echo $trading_currency; ?>;
+const USD_TRY_RATE = <?php echo $usd_try_rate; ?>;
+
 // Set amount quickly
 function setAmount(amount) {
     const amountInput = document.querySelector('input[name="amount"]');
     if (amountInput) {
         amountInput.value = amount;
+        // Trigger conversion calculation
+        if (amountInput.id === 'withdrawAmount') {
+            calculateWithdrawConversion();
+        }
     }
+}
+
+// Calculate deposit conversion
+function calculateDepositConversion() {
+    const amountInput = document.getElementById('depositAmount');
+    const conversionDisplay = document.getElementById('depositConversion');
+    
+    if (!amountInput || !conversionDisplay) return;
+    
+    const amount = parseFloat(amountInput.value) || 0;
+    
+    if (amount <= 0) {
+        conversionDisplay.textContent = '';
+        return;
+    }
+    
+    let convertedAmount = 0;
+    let conversionText = '';
+    
+    if (TRADING_CURRENCY === 1) { // TL Mode - show USD equivalent
+        convertedAmount = amount / USD_TRY_RATE;
+        conversionText = `≈ ${convertedAmount.toFixed(2)} USD`;
+    } else { // USD Mode - show TL equivalent
+        convertedAmount = amount * USD_TRY_RATE;
+        conversionText = `≈ ${convertedAmount.toFixed(2)} TL`;
+    }
+    
+    conversionDisplay.textContent = conversionText;
+}
+
+// Calculate withdrawal conversion
+function calculateWithdrawConversion() {
+    const amountInput = document.getElementById('withdrawAmount');
+    const conversionDisplay = document.getElementById('withdrawConversion');
+    
+    if (!amountInput || !conversionDisplay) return;
+    
+    const amount = parseFloat(amountInput.value) || 0;
+    
+    if (amount <= 0) {
+        conversionDisplay.textContent = '';
+        return;
+    }
+    
+    let convertedAmount = 0;
+    let conversionText = '';
+    
+    if (TRADING_CURRENCY === 1) { // TL Mode - show USD equivalent
+        convertedAmount = amount / USD_TRY_RATE;
+        conversionText = `≈ ${convertedAmount.toFixed(2)} USD`;
+    } else { // USD Mode - show TL equivalent
+        convertedAmount = amount * USD_TRY_RATE;
+        conversionText = `≈ ${convertedAmount.toFixed(2)} TL`;
+    }
+    
+    conversionDisplay.textContent = conversionText;
+}
+
+// Turkish number formatting
+function formatTurkishNumber(number, decimals = 2) {
+    return new Intl.NumberFormat('tr-TR', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+    }).format(number);
 }
 
 // TC Kimlik validation - sadece sayı
