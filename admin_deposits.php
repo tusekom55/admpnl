@@ -41,9 +41,10 @@ if ($_POST) {
                     $is_usd_deposit = false;
                     $usd_amount = $deposit['amount'];
                     
-                    if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd') {
+                    // Güvenli kontrol - deposit_type alanı var mı kontrol et
+                    if (array_key_exists('deposit_type', $deposit) && $deposit['deposit_type'] == 'tl_to_usd') {
                         $is_usd_deposit = true;
-                    } elseif (strpos($deposit['reference'], '→ USD:') !== false || strpos($deposit['reference'], 'USD:') !== false) {
+                    } elseif (!empty($deposit['reference']) && (strpos($deposit['reference'], '→ USD:') !== false || strpos($deposit['reference'], 'USD:') !== false)) {
                         // Fallback: Reference field'dan USD deposit olup olmadığını anla
                         $is_usd_deposit = true;
                         // Reference'dan USD miktarını çıkar - farklı formatları dene
@@ -70,7 +71,7 @@ if ($_POST) {
                     $success = "Para yatırma onaylandı ve kullanıcı bakiyesi güncellendi!";
                 } catch (Exception $e) {
                     $db->rollback();
-                    $error = "İşlem sırasında hata oluştu!";
+                    $error = "İşlem sırasında hata oluştu: " . $e->getMessage();
                 }
             }
         }
@@ -91,27 +92,55 @@ if ($_POST) {
     }
 }
 
-// Bekleyen depositleri getir (payment method ile birlikte)
-$query = "SELECT d.*, u.username, u.email, 
-                 pm.name as payment_method_name, pm.type as payment_method_type, pm.code as payment_method_code
-          FROM deposits d 
-          LEFT JOIN users u ON d.user_id = u.id 
-          LEFT JOIN payment_methods pm ON d.payment_method_id = pm.id
-          WHERE d.status = 'pending' 
-          ORDER BY d.created_at DESC";
+// Önce payment_methods tablosunun varlığını kontrol et
+$payment_methods_exists = false;
+try {
+    $query = "SHOW TABLES LIKE 'payment_methods'";
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+    $payment_methods_exists = $stmt->rowCount() > 0;
+} catch (Exception $e) {
+    $payment_methods_exists = false;
+}
+
+// Bekleyen depositleri getir
+if ($payment_methods_exists) {
+    $query = "SELECT d.*, u.username, u.email, 
+                     pm.name as payment_method_name, pm.type as payment_method_type, pm.code as payment_method_code
+              FROM deposits d 
+              LEFT JOIN users u ON d.user_id = u.id 
+              LEFT JOIN payment_methods pm ON d.payment_method_id = pm.id
+              WHERE d.status = 'pending' 
+              ORDER BY d.created_at DESC";
+} else {
+    $query = "SELECT d.*, u.username, u.email
+              FROM deposits d 
+              LEFT JOIN users u ON d.user_id = u.id 
+              WHERE d.status = 'pending' 
+              ORDER BY d.created_at DESC";
+}
 $stmt = $db->prepare($query);
 $stmt->execute();
 $pending_deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Son işlemleri getir (payment method ile birlikte)
-$query = "SELECT d.*, u.username, u.email, 
-                 pm.name as payment_method_name, pm.type as payment_method_type, pm.code as payment_method_code
-          FROM deposits d 
-          LEFT JOIN users u ON d.user_id = u.id 
-          LEFT JOIN payment_methods pm ON d.payment_method_id = pm.id
-          WHERE d.status IN ('approved', 'rejected') 
-          ORDER BY d.processed_at DESC 
-          LIMIT 20";
+// Son işlemleri getir
+if ($payment_methods_exists) {
+    $query = "SELECT d.*, u.username, u.email, 
+                     pm.name as payment_method_name, pm.type as payment_method_type, pm.code as payment_method_code
+              FROM deposits d 
+              LEFT JOIN users u ON d.user_id = u.id 
+              LEFT JOIN payment_methods pm ON d.payment_method_id = pm.id
+              WHERE d.status IN ('approved', 'rejected') 
+              ORDER BY d.processed_at DESC 
+              LIMIT 20";
+} else {
+    $query = "SELECT d.*, u.username, u.email
+              FROM deposits d 
+              LEFT JOIN users u ON d.user_id = u.id 
+              WHERE d.status IN ('approved', 'rejected') 
+              ORDER BY d.processed_at DESC 
+              LIMIT 20";
+}
 $stmt = $db->prepare($query);
 $stmt->execute();
 $recent_deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
