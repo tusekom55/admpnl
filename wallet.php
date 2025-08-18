@@ -345,11 +345,99 @@ include 'includes/header.php';
                                 
                                 <div class="mb-3">
                                     <label class="form-label"><?php echo getCurrentLang() == 'tr' ? 'Ödeme Yöntemi' : 'Payment Method'; ?></label>
-                                    <select class="form-select" name="method" required>
+                                    <select class="form-select" name="method" id="depositMethod" onchange="showDepositDetails()" required>
                                         <option value=""><?php echo getCurrentLang() == 'tr' ? 'Seçiniz' : 'Select'; ?></option>
-                                        <option value="iban">IBAN (Banka Havalesi)</option>
-                                        <option value="papara">Papara</option>
+                                        <option value="bank">🏦 Banka Havalesi</option>
+                                        <option value="digital">📱 Dijital Ödeme (Papara vb.)</option>
+                                        <option value="crypto">₿ Kripto Para</option>
                                     </select>
+                                </div>
+
+                                <!-- Banka Seçimi -->
+                                <div id="bankDepositDetails" style="display: none;">
+                                    <div class="mb-3">
+                                        <label class="form-label">Banka Seçiniz</label>
+                                        <div class="row">
+                                            <?php foreach ($banks as $bank): ?>
+                                            <div class="col-md-6 mb-2">
+                                                <div class="bank-option p-3 border rounded" onclick="selectBank('<?php echo $bank['code']; ?>', '<?php echo $bank['iban']; ?>', '<?php echo $bank['account_name']; ?>')">
+                                                    <div class="text-center">
+                                                        <div class="h5 mb-1"><?php echo $bank['icon']; ?></div>
+                                                        <div class="fw-bold"><?php echo $bank['name']; ?></div>
+                                                        <small class="text-muted"><?php echo substr($bank['iban'], 0, 8); ?>...</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <input type="hidden" name="selected_bank" id="selectedBank">
+                                    </div>
+                                    
+                                    <div class="alert alert-info" id="bankInfo" style="display: none;">
+                                        <h6>Havale Bilgileri</h6>
+                                        <strong>IBAN:</strong> <span id="displayIban"></span><br>
+                                        <strong>Hesap Adı:</strong> <span id="displayAccountName"></span><br>
+                                        <small class="text-muted">Havale açıklama kısmına kullanıcı adınızı yazınız.</small>
+                                    </div>
+                                </div>
+
+                                <!-- Dijital Ödeme Seçimi -->
+                                <div id="digitalDepositDetails" style="display: none;">
+                                    <div class="mb-3">
+                                        <label class="form-label">Dijital Ödeme Yöntemi</label>
+                                        <div class="row">
+                                            <?php foreach ($digital as $method): ?>
+                                            <div class="col-md-6 mb-2">
+                                                <div class="digital-option p-3 border rounded" onclick="selectDigital('<?php echo $method['code']; ?>', '<?php echo $method['name']; ?>', '<?php echo $method['account_name']; ?>')">
+                                                    <div class="text-center">
+                                                        <div class="h5 mb-1"><?php echo $method['icon']; ?></div>
+                                                        <div class="fw-bold"><?php echo $method['name']; ?></div>
+                                                        <small class="text-muted"><?php echo $method['code']; ?></small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <input type="hidden" name="selected_digital" id="selectedDigital">
+                                    </div>
+                                    
+                                    <div class="alert alert-success" id="digitalInfo" style="display: none;">
+                                        <h6>Dijital Ödeme Bilgileri</h6>
+                                        <strong>Yöntem:</strong> <span id="displayDigitalName"></span><br>
+                                        <strong>Hesap No:</strong> <span id="displayDigitalCode"></span><br>
+                                        <strong>Hesap Adı:</strong> <span id="displayDigitalAccount"></span><br>
+                                    </div>
+                                </div>
+
+                                <!-- Kripto Para Seçimi -->
+                                <div id="cryptoDepositDetails" style="display: none;">
+                                    <div class="mb-3">
+                                        <label class="form-label">Kripto Para Seçiniz</label>
+                                        <div class="row">
+                                            <?php foreach ($cryptos as $crypto): ?>
+                                            <div class="col-md-4 mb-2">
+                                                <div class="crypto-option p-2 border rounded text-center" onclick="selectCrypto('<?php echo $crypto['code']; ?>', '<?php echo $crypto['iban']; ?>', '<?php echo $crypto['account_name']; ?>')">
+                                                    <div class="h6 mb-1"><?php echo $crypto['icon']; ?></div>
+                                                    <div class="fw-bold small"><?php echo $crypto['name']; ?></div>
+                                                    <small class="text-muted"><?php echo $crypto['code']; ?></small>
+                                                </div>
+                                            </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <input type="hidden" name="selected_crypto" id="selectedCrypto">
+                                    </div>
+                                    
+                                    <div class="alert alert-warning" id="cryptoInfo" style="display: none;">
+                                        <h6>Kripto Para Bilgileri</h6>
+                                        <strong>Kripto:</strong> <span id="displayCryptoName"></span><br>
+                                        <strong>Network:</strong> <span id="displayCryptoNetwork"></span><br>
+                                        <strong>Wallet Adresi:</strong><br>
+                                        <code class="small" id="displayCryptoAddress"></code><br>
+                                        <small class="text-warning">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            Sadece bu ağa gönderim yapın. Yanlış ağ kullanımında paralarınız kaybolabilir!
+                                        </small>
+                                    </div>
                                 </div>
                                 
                                 <div class="mb-3">
@@ -908,6 +996,87 @@ document.getElementById('withdrawMethod').addEventListener('change', function() 
         cryptoDetails.style.display = 'block';
     }
 });
+
+// Show deposit details based on method selection
+function showDepositDetails() {
+    const method = document.getElementById('depositMethod').value;
+    const bankDetails = document.getElementById('bankDepositDetails');
+    const digitalDetails = document.getElementById('digitalDepositDetails');
+    const cryptoDetails = document.getElementById('cryptoDepositDetails');
+    
+    // Hide all details
+    [bankDetails, digitalDetails, cryptoDetails].forEach(el => {
+        if (el) el.style.display = 'none';
+    });
+    
+    // Show relevant details
+    if (method === 'bank' && bankDetails) {
+        bankDetails.style.display = 'block';
+    } else if (method === 'digital' && digitalDetails) {
+        digitalDetails.style.display = 'block';
+    } else if (method === 'crypto' && cryptoDetails) {
+        cryptoDetails.style.display = 'block';
+    }
+}
+
+// Bank selection functions
+function selectBank(code, iban, accountName) {
+    // Remove active class from all bank options
+    document.querySelectorAll('.bank-option').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // Add active class to selected option
+    event.target.closest('.bank-option').classList.add('active');
+    
+    // Set hidden field
+    document.getElementById('selectedBank').value = code;
+    
+    // Show bank info
+    document.getElementById('displayIban').textContent = iban;
+    document.getElementById('displayAccountName').textContent = accountName;
+    document.getElementById('bankInfo').style.display = 'block';
+}
+
+// Digital payment selection
+function selectDigital(code, name, accountName) {
+    // Remove active class from all digital options
+    document.querySelectorAll('.digital-option').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // Add active class to selected option
+    event.target.closest('.digital-option').classList.add('active');
+    
+    // Set hidden field
+    document.getElementById('selectedDigital').value = code;
+    
+    // Show digital info
+    document.getElementById('displayDigitalName').textContent = name;
+    document.getElementById('displayDigitalCode').textContent = code;
+    document.getElementById('displayDigitalAccount').textContent = accountName;
+    document.getElementById('digitalInfo').style.display = 'block';
+}
+
+// Crypto selection
+function selectCrypto(code, address, network) {
+    // Remove active class from all crypto options
+    document.querySelectorAll('.crypto-option').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // Add active class to selected option
+    event.target.closest('.crypto-option').classList.add('active');
+    
+    // Set hidden field
+    document.getElementById('selectedCrypto').value = code;
+    
+    // Show crypto info
+    document.getElementById('displayCryptoName').textContent = code;
+    document.getElementById('displayCryptoNetwork').textContent = network;
+    document.getElementById('displayCryptoAddress').textContent = address;
+    document.getElementById('cryptoInfo').style.display = 'block';
+}
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
