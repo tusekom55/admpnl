@@ -613,129 +613,184 @@ include 'includes/header.php';
     }
 }
 
-/* RESPONSIVE TRADING MODAL SIZING */
+/* TRADING MODAL OPTİMİZASYONU - RESPONSIVE SIZING */
 .modal-responsive-trading {
-    max-width: 900px;
+    max-width: 800px !important;
+    margin: 1rem auto !important;
 }
 
+/* Mobil optimizasyonu - Tam ekran yerine kompakt */
 @media (max-width: 768px) {
     .modal-responsive-trading {
-        max-width: 100%;
-        margin: 0;
-        height: 100vh;
+        max-width: 95% !important;
+        margin: 0.25rem auto !important;
     }
     
     .modal-responsive-trading .modal-content {
-        height: 100vh;
-        border-radius: 0;
-        border: none;
+        border-radius: 15px !important;
+        margin: 0 !important;
+        max-height: 85vh !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
     
     .modal-responsive-trading .modal-header {
-        padding: 1rem;
-        border-bottom: 1px solid #dee2e6;
-        flex-shrink: 0;
+        padding: 0.75rem !important;
+        border-bottom: 1px solid #dee2e6 !important;
+        flex-shrink: 0 !important;
     }
     
     .modal-responsive-trading .modal-body {
-        padding: 0;
-        flex: 1;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
+        padding: 0 !important;
+        flex: 1 !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
     
     .modal-responsive-trading .modal-title {
-        font-size: 1.1rem;
+        font-size: 1rem !important;
     }
     
     /* Mobile tab content optimization */
     .modal-responsive-trading .mobile-tab-content {
-        flex: 1;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
+        flex: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
     }
     
     /* Touch-friendly buttons and inputs */
     .modal-responsive-trading .btn {
-        min-height: 48px;
-        font-size: 1rem;
-        font-weight: 600;
+        min-height: 44px !important;
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        padding: 0.5rem 0.75rem !important;
     }
     
     .modal-responsive-trading .form-control,
     .modal-responsive-trading .form-select {
-        min-height: 48px;
-        font-size: 1rem;
+        min-height: 44px !important;
+        font-size: 0.9rem !important;
     }
     
     .modal-responsive-trading .input-group-text {
-        min-height: 48px;
-        font-size: 1rem;
+        min-height: 44px !important;
+        font-size: 0.85rem !important;
     }
     
     /* Better spacing for trading forms */
     .modal-responsive-trading .trading-container-mobile {
-        height: 100%;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
+        height: 100% !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
     }
     
     .modal-responsive-trading .chart-container-mobile {
-        height: 100%;
-        overflow: hidden;
+        height: 100% !important;
+        overflow: hidden !important;
     }
     
     /* Tab navigation improvements */
     .modal-responsive-trading .nav-tabs {
-        border-bottom: 1px solid #dee2e6;
-        margin-bottom: 0;
-        flex-shrink: 0;
+        border-bottom: 1px solid #dee2e6 !important;
+        margin-bottom: 0 !important;
+        flex-shrink: 0 !important;
+        background: #f8f9fa !important;
     }
     
     .modal-responsive-trading .nav-tabs .nav-link {
-        padding: 1rem 1.5rem;
-        font-weight: 600;
-        border: none;
-        border-bottom: 3px solid transparent;
-        background: none;
-        color: #6c757d;
-        border-radius: 0;
+        padding: 0.75rem 1rem !important;
+        font-weight: 600 !important;
+        border: none !important;
+        border-bottom: 3px solid transparent !important;
+        background: none !important;
+        color: #6c757d !important;
+        border-radius: 0 !important;
+        font-size: 0.9rem !important;
     }
     
     .modal-responsive-trading .nav-tabs .nav-link.active {
-        color: #007bff;
-        background: none;
-        border-bottom-color: #007bff;
+        color: #007bff !important;
+        background: white !important;
+        border-bottom-color: #007bff !important;
     }
     
     /* Chart container optimization */
     .modal-responsive-trading .chart-container iframe {
         width: 100% !important;
         height: 100% !important;
-        min-height: 350px;
+        min-height: 300px !important;
+    }
+    
+    /* Trading form padding */
+    .modal-responsive-trading .p-3 {
+        padding: 0.75rem !important;
+    }
+    
+    /* Alert optimization */
+    .modal-responsive-trading .alert {
+        padding: 0.5rem !important;
+        font-size: 0.8rem !important;
+        margin: 0.5rem 0 !important;
+    }
+    
+    /* Input group sizing */
+    .modal-responsive-trading .input-group-lg .form-control,
+    .modal-responsive-trading .input-group-lg .input-group-text {
+        min-height: 44px !important;
+        font-size: 0.9rem !important;
+    }
+    
+    /* Button sizing in forms */
+    .modal-responsive-trading .btn-lg {
+        min-height: 48px !important;
+        font-size: 1rem !important;
+        padding: 0.75rem 1rem !important;
     }
 }
 
 /* Desktop modal optimization */
 @media (min-width: 769px) {
     .modal-responsive-trading {
-        max-width: 900px;
-        margin: 1.75rem auto;
+        max-width: 800px !important;
+        margin: 1.5rem auto !important;
     }
     
     .modal-responsive-trading .modal-content {
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        border-radius: 12px !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
     }
     
     .modal-responsive-trading .modal-header {
-        padding: 1.5rem;
-        border-bottom: 1px solid #dee2e6;
+        padding: 1.25rem !important;
+        border-bottom: 1px solid #dee2e6 !important;
     }
     
     .modal-responsive-trading .modal-body {
-        padding: 1.5rem;
+        padding: 1.25rem !important;
+    }
+}
+
+/* Modal backdrop iyileştirmesi */
+@media (max-width: 768px) {
+    #mobileTradeModal .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.7) !important;
+    }
+    
+    #mobileTradeModal.fade .modal-dialog {
+        transition: transform 0.25s ease-out !important;
+    }
+    
+    /* Modal animasyonu */
+    #mobileTradeModal.fade:not(.show) .modal-dialog {
+        transform: scale(0.8) !important;
+        opacity: 0 !important;
+    }
+    
+    #mobileTradeModal.show .modal-dialog {
+        transform: scale(1) !important;
+        opacity: 1 !important;
     }
 }
 </style>
