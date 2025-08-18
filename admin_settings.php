@@ -44,6 +44,87 @@ function getSettings($db) {
     return array_merge($defaults, $settings);
 }
 
+// Logo upload işlemi
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'upload_logo') {
+    try {
+        $logo_type = $_POST['logo_type'] ?? 'main_logo';
+        
+        if (isset($_FILES['logo_file']) && $_FILES['logo_file']['error'] == 0) {
+            $file = $_FILES['logo_file'];
+            
+            // Dosya doğrulama
+            $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            $max_size = 5 * 1024 * 1024; // 5MB
+            
+            if (!in_array($file['type'], $allowed_types)) {
+                throw new Exception('Sadece JPG, PNG, GIF ve WebP formatları kabul edilir.');
+            }
+            
+            if ($file['size'] > $max_size) {
+                throw new Exception('Dosya boyutu 5MB\'dan küçük olmalıdır.');
+            }
+            
+            // Dosya adı oluştur
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = $logo_type . '_' . time() . '.' . $extension;
+            $upload_path = 'uploads/logos/' . $filename;
+            
+            // Dosyayı yükle
+            if (move_uploaded_file($file['tmp_name'], $upload_path)) {
+                // Eski logoyu sil
+                $old_logo_query = "SELECT setting_value FROM settings WHERE setting_key = ?";
+                $old_stmt = $db->prepare($old_logo_query);
+                $old_stmt->execute([$logo_type]);
+                $old_logo = $old_stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($old_logo && file_exists($old_logo['setting_value'])) {
+                    unlink($old_logo['setting_value']);
+                }
+                
+                // Veritabanını güncelle
+                $query = "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
+                         ON DUPLICATE KEY UPDATE setting_value = ?";
+                $stmt = $db->prepare($query);
+                $stmt->execute([$logo_type, $upload_path, $upload_path]);
+                
+                $success_message = "Logo başarıyla yüklendi!";
+            } else {
+                throw new Exception('Dosya yüklenirken hata oluştu.');
+            }
+        } else {
+            throw new Exception('Lütfen geçerli bir dosya seçin.');
+        }
+    } catch(Exception $e) {
+        $error_message = "Logo yükleme hatası: " . $e->getMessage();
+    }
+}
+
+// Logo silme işlemi
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'delete_logo') {
+    try {
+        $logo_type = $_POST['logo_type'] ?? '';
+        
+        // Mevcut logoyu al
+        $query = "SELECT setting_value FROM settings WHERE setting_key = ?";
+        $stmt = $db->prepare($query);
+        $stmt->execute([$logo_type]);
+        $logo = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($logo && file_exists($logo['setting_value'])) {
+            unlink($logo['setting_value']);
+        }
+        
+        // Veritabanından sil
+        $query = "DELETE FROM settings WHERE setting_key = ?";
+        $stmt = $db->prepare($query);
+        $stmt->execute([$logo_type]);
+        
+        $success_message = "Logo başarıyla silindi!";
+    } catch(Exception $e) {
+        $error_message = "Logo silme hatası: " . $e->getMessage();
+    }
+}
+
 // Ayar güncelleme
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'update_settings') {
     try {
@@ -142,6 +223,7 @@ try {
     <title>Sistem Ayarları - Admin Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/admin-mobile.css" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -212,6 +294,142 @@ try {
                         <i class="fas fa-database fa-2x mb-2"></i>
                         <h5>DB Boyutu</h5>
                         <h3><?php echo $stats['db_size']; ?> MB</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logo Yönetimi -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-image"></i> Site Logo Yönetimi</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Ana Logo -->
+                            <div class="col-md-4">
+                                <div class="card border">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-home"></i> Ana Logo</h6>
+                                        <small class="text-muted">Sitenin ana logosu (navbar, ana sayfa)</small>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <?php if (isset($settings['main_logo']) && file_exists($settings['main_logo'])): ?>
+                                            <img src="<?php echo $settings['main_logo']; ?>" alt="Ana Logo" class="img-fluid mb-3" style="max-height: 100px; max-width: 100%;">
+                                            <br>
+                                            <form method="POST" style="display: inline;">
+                                                <input type="hidden" name="action" value="delete_logo">
+                                                <input type="hidden" name="logo_type" value="main_logo">
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Ana logoyu silmek istediğinizden emin misiniz?')">
+                                                    <i class="fas fa-trash"></i> Sil
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">Logo yüklenmemiş</p>
+                                        <?php endif; ?>
+                                        
+                                        <form method="POST" enctype="multipart/form-data" class="mt-3">
+                                            <input type="hidden" name="action" value="upload_logo">
+                                            <input type="hidden" name="logo_type" value="main_logo">
+                                            <div class="mb-2">
+                                                <input type="file" class="form-control form-control-sm" name="logo_file" accept="image/*" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-upload"></i> Yükle
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Favicon -->
+                            <div class="col-md-4">
+                                <div class="card border">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-star"></i> Favicon</h6>
+                                        <small class="text-muted">Tarayıcı sekmesinde görünen icon</small>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <?php if (isset($settings['favicon']) && file_exists($settings['favicon'])): ?>
+                                            <img src="<?php echo $settings['favicon']; ?>" alt="Favicon" class="img-fluid mb-3" style="max-height: 64px; max-width: 64px;">
+                                            <br>
+                                            <form method="POST" style="display: inline;">
+                                                <input type="hidden" name="action" value="delete_logo">
+                                                <input type="hidden" name="logo_type" value="favicon">
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Favicon\'u silmek istediğinizden emin misiniz?')">
+                                                    <i class="fas fa-trash"></i> Sil
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">Favicon yüklenmemiş</p>
+                                        <?php endif; ?>
+                                        
+                                        <form method="POST" enctype="multipart/form-data" class="mt-3">
+                                            <input type="hidden" name="action" value="upload_logo">
+                                            <input type="hidden" name="logo_type" value="favicon">
+                                            <div class="mb-2">
+                                                <input type="file" class="form-control form-control-sm" name="logo_file" accept="image/*" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-upload"></i> Yükle
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer Logo -->
+                            <div class="col-md-4">
+                                <div class="card border">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-layer-group"></i> Footer Logo</h6>
+                                        <small class="text-muted">Sayfa altında görünen logo</small>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <?php if (isset($settings['footer_logo']) && file_exists($settings['footer_logo'])): ?>
+                                            <img src="<?php echo $settings['footer_logo']; ?>" alt="Footer Logo" class="img-fluid mb-3" style="max-height: 100px; max-width: 100%;">
+                                            <br>
+                                            <form method="POST" style="display: inline;">
+                                                <input type="hidden" name="action" value="delete_logo">
+                                                <input type="hidden" name="logo_type" value="footer_logo">
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Footer logoyu silmek istediğinizden emin misiniz?')">
+                                                    <i class="fas fa-trash"></i> Sil
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <i class="fas fa-layer-group fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">Footer logo yüklenmemiş</p>
+                                        <?php endif; ?>
+                                        
+                                        <form method="POST" enctype="multipart/form-data" class="mt-3">
+                                            <input type="hidden" name="action" value="upload_logo">
+                                            <input type="hidden" name="logo_type" value="footer_logo">
+                                            <div class="mb-2">
+                                                <input type="file" class="form-control form-control-sm" name="logo_file" accept="image/*" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-upload"></i> Yükle
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3">
+                            <h6><i class="fas fa-info-circle"></i> Logo Yükleme Kuralları:</h6>
+                            <ul class="mb-0">
+                                <li><strong>Dosya Formatları:</strong> JPG, PNG, GIF, WebP</li>
+                                <li><strong>Maksimum Boyut:</strong> 5MB</li>
+                                <li><strong>Ana Logo Önerilen Boyut:</strong> 200x60px (genişlik x yükseklik)</li>
+                                <li><strong>Favicon Önerilen Boyut:</strong> 32x32px veya 64x64px</li>
+                                <li><strong>Footer Logo:</strong> Ana logo ile aynı boyutlarda olabilir</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
