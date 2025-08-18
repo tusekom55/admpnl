@@ -36,8 +36,8 @@ if (!in_array($current_page, $public_pages)) {
         }
         
         .modal-dialog {
-            max-width: 350px !important;
-            width: 350px !important;
+            max-width: 700px !important;
+            width: 700px !important;
             margin: 1rem auto !important;
             position: relative !important;
             top: 50px !important;
