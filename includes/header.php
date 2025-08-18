@@ -866,6 +866,35 @@ if (!in_array($current_page, $public_pages)) {
                     </div>
                     
                     <?php if (isLoggedIn()): ?>
+                        <!-- Admin Button (only for admin users) -->
+                        <?php 
+                        // Check if user is admin
+                        $isAdmin = false;
+                        try {
+                            $database = new Database();
+                            $db = $database->getConnection();
+                            $query = "SELECT role, is_admin FROM users WHERE id = ?";
+                            $stmt = $db->prepare($query);
+                            $stmt->execute([$_SESSION['user_id']]);
+                            $userInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+                            
+                            // Check if user is admin (either by role='admin' or is_admin=1)
+                            $isAdmin = ($userInfo && (
+                                (isset($userInfo['role']) && $userInfo['role'] === 'admin') ||
+                                (isset($userInfo['is_admin']) && $userInfo['is_admin'] == 1)
+                            ));
+                        } catch (Exception $e) {
+                            // If there's an error, don't show admin access
+                            $isAdmin = false;
+                        }
+                        ?>
+                        
+                        <?php if ($isAdmin): ?>
+                            <a href="admin.php" class="btn btn-danger me-2 d-none d-md-inline-block" title="<?php echo getCurrentLang() == 'tr' ? 'Admin Paneli' : 'Admin Panel'; ?>">
+                                <i class="fas fa-cog me-1"></i><span class="d-none d-lg-inline"><?php echo getCurrentLang() == 'tr' ? 'Admin' : 'Admin'; ?></span>
+                            </a>
+                        <?php endif; ?>
+                        
                         <!-- User Balance (Parametric) -->
                         <div class="me-3 d-none d-md-block">
                             <small class="text-muted"><?php echo t('balance'); ?>:</small>
@@ -880,6 +909,10 @@ if (!in_array($current_page, $public_pages)) {
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i><?php echo t('profile'); ?></a></li>
                                 <li><a class="dropdown-item" href="wallet.php"><i class="fas fa-wallet me-2"></i><?php echo t('wallet'); ?></a></li>
+                                <?php if ($isAdmin): ?>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="admin.php"><i class="fas fa-cog me-2"></i><?php echo getCurrentLang() == 'tr' ? 'Admin Paneli' : 'Admin Panel'; ?></a></li>
+                                <?php endif; ?>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i><?php echo t('logout'); ?></a></li>
                             </ul>
@@ -945,6 +978,14 @@ if (!in_array($current_page, $public_pages)) {
                             <?php echo getCurrentLang() == 'tr' ? 'Profil' : 'Profile'; ?>
                         </a>
                     </li>
+                    <?php if ($isAdmin): ?>
+                    <li class="mobile-nav-item">
+                        <a href="admin.php" class="mobile-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin.php' ? 'active' : ''; ?>" style="border-color: #dc3545; color: #dc3545;">
+                            <i class="mobile-nav-icon fas fa-cog"></i>
+                            <?php echo getCurrentLang() == 'tr' ? 'Admin Paneli' : 'Admin Panel'; ?>
+                        </a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
                 
                 <!-- Logout Section -->
