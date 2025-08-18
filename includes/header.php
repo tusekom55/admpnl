@@ -866,10 +866,35 @@ if (!in_array($current_page, $public_pages)) {
                     </div>
                     
                     <?php if (isLoggedIn()): ?>
-                        <!-- Admin Button (TEST - always show) -->
-                        <a href="admin.php" class="btn btn-danger me-2 d-none d-md-inline-block" title="<?php echo getCurrentLang() == 'tr' ? 'Admin Paneli' : 'Admin Panel'; ?>">
-                            <i class="fas fa-cog me-1"></i><span class="d-none d-lg-inline"><?php echo getCurrentLang() == 'tr' ? 'Admin' : 'Admin'; ?></span>
-                        </a>
+                        <!-- Admin Button (only for admin users) -->
+                        <?php 
+                        // Check if user is admin
+                        $isAdmin = false;
+                        try {
+                            $database = new Database();
+                            $db = $database->getConnection();
+                            $query = "SELECT is_admin, role FROM users WHERE id = ?";
+                            $stmt = $db->prepare($query);
+                            $stmt->execute([$_SESSION['user_id']]);
+                            $userInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+                            
+                            // Check if user is admin
+                            if ($userInfo) {
+                                $isAdmin = (
+                                    (isset($userInfo['is_admin']) && ($userInfo['is_admin'] == 1 || $userInfo['is_admin'] === '1')) ||
+                                    (isset($userInfo['role']) && $userInfo['role'] === 'admin')
+                                );
+                            }
+                        } catch (Exception $e) {
+                            $isAdmin = false;
+                        }
+                        ?>
+                        
+                        <?php if ($isAdmin): ?>
+                            <a href="admin.php" class="btn btn-danger me-2 d-none d-md-inline-block" title="<?php echo getCurrentLang() == 'tr' ? 'Admin Paneli' : 'Admin Panel'; ?>">
+                                <i class="fas fa-cog me-1"></i><span class="d-none d-lg-inline"><?php echo getCurrentLang() == 'tr' ? 'Admin' : 'Admin'; ?></span>
+                            </a>
+                        <?php endif; ?>
                         
                         <!-- User Balance (Parametric) -->
                         <div class="me-3 d-none d-md-block">
@@ -954,13 +979,14 @@ if (!in_array($current_page, $public_pages)) {
                             <?php echo getCurrentLang() == 'tr' ? 'Profil' : 'Profile'; ?>
                         </a>
                     </li>
-                    <!-- TEST - Admin button always visible -->
+                    <?php if ($isAdmin): ?>
                     <li class="mobile-nav-item">
                         <a href="admin.php" class="mobile-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin.php' ? 'active' : ''; ?>" style="border-color: #dc3545; color: #dc3545;">
                             <i class="mobile-nav-icon fas fa-cog"></i>
-                            <?php echo getCurrentLang() == 'tr' ? 'Admin Paneli (TEST)' : 'Admin Panel (TEST)'; ?>
+                            <?php echo getCurrentLang() == 'tr' ? 'Admin Paneli' : 'Admin Panel'; ?>
                         </a>
                     </li>
+                    <?php endif; ?>
                 </ul>
                 
                 <!-- Logout Section -->
