@@ -737,7 +737,7 @@ include 'includes/header.php';
                                         // Convert transaction type to user-friendly Turkish display
                                         $display_text = '';
                                         $badge_class = 'bg-info';
-                                        $icon = 'fas fa-exchange-alt';
+                                        $icon = 'fas fa-tag';
                                         
                                         switch (strtoupper($transaction_type)) {
                                             case 'BUY':
@@ -774,7 +774,7 @@ include 'includes/header.php';
                                                 // Show the transaction type as-is for any unrecognized types
                                                 $display_text = strtoupper($transaction_type);
                                                 $badge_class = 'bg-info';
-                                                $icon = 'fas fa-exchange-alt';
+                                                $icon = 'fas fa-tag';
                                                 break;
                                         }
                                         ?>
