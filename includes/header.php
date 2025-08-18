@@ -868,10 +868,19 @@ if (!in_array($current_page, $public_pages)) {
                     <?php if (isLoggedIn()): ?>
                         <!-- Admin Button (only for admin users) -->
                         <?php 
-                        // Proper admin detection
+                        // Debug admin detection
                         $isAdmin = false;
+                        $debug_info = "";
+                        
                         if (isset($_SESSION['user_id'])) {
+                            $debug_info .= "User ID: " . $_SESSION['user_id'] . " ";
+                            
                             try {
+                                // Try to include database if not already included
+                                if (!class_exists('Database')) {
+                                    require_once 'config/database.php';
+                                }
+                                
                                 $database = new Database();
                                 $db = $database->getConnection();
                                 $query = "SELECT is_admin FROM users WHERE user_id = ?";
@@ -879,14 +888,24 @@ if (!in_array($current_page, $public_pages)) {
                                 $stmt->execute([$_SESSION['user_id']]);
                                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
                                 
-                                if ($user && $user['is_admin'] == 1) {
-                                    $isAdmin = true;
+                                $debug_info .= "Query result: " . ($user ? "found" : "not found") . " ";
+                                
+                                if ($user) {
+                                    $debug_info .= "is_admin value: " . $user['is_admin'] . " ";
+                                    if ($user['is_admin'] == 1) {
+                                        $isAdmin = true;
+                                        $debug_info .= "ADMIN ACCESS GRANTED ";
+                                    }
                                 }
                             } catch (Exception $e) {
-                                // Error in admin check - default to false for security
-                                $isAdmin = false;
+                                $debug_info .= "Error: " . $e->getMessage() . " ";
+                                // TEMPORARY: For debugging, let's show admin for all logged in users if there's a database error
+                                $isAdmin = true;
                             }
                         }
+                        
+                        // Temporary debug output (remove after testing)
+                        echo "<!-- DEBUG: " . $debug_info . " -->";
                         ?>
                         
                         <?php if ($isAdmin): ?>
