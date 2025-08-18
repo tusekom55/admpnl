@@ -21,8 +21,60 @@ if (!in_array($current_page, $public_pages)) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="assets/css/style.css" rel="stylesheet">
-    <!-- Modal Overrides CSS - MUST load after Bootstrap -->
-    <link href="assets/css/modal-overrides.css" rel="stylesheet">
+    
+    <!-- EMERGENCY MODAL FIX - INLINE CSS -->
+    <style>
+        /* EMERGENCY MODAL OVERRIDE */
+        #tradeModal {
+            border: 5px solid red !important;
+        }
+        
+        #leverageModal {
+            border: 5px solid blue !important;
+        }
+        
+        .modal-dialog {
+            max-width: 200px !important;
+            width: 200px !important;
+            margin: 1rem auto !important;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-dialog {
+                max-width: 150px !important;
+                width: 150px !important;
+                margin: 0.5rem auto !important;
+            }
+        }
+        
+        .modal-content {
+            max-height: 60vh !important;
+            overflow: hidden !important;
+        }
+        
+        .modal-body {
+            padding: 0.5rem !important;
+            font-size: 0.8rem !important;
+        }
+        
+        .modal-header {
+            padding: 0.5rem !important;
+        }
+        
+        .modal-title {
+            font-size: 0.9rem !important;
+        }
+        
+        .btn {
+            font-size: 0.7rem !important;
+            padding: 0.25rem 0.5rem !important;
+        }
+        
+        .form-control {
+            font-size: 0.8rem !important;
+            padding: 0.25rem !important;
+        }
+    </style>
     
     <style>
         :root {
