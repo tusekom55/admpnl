@@ -310,10 +310,10 @@ $markets = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                         </div>
                         
-                        <!-- Değişim Yüzdesi -->
-                        <div class="mb-3">
+                        <!-- Değişim Yüzdesi - Gizli -->
+                        <div class="mb-3" style="display: none;">
                             <label class="form-label">Değişim % (İsteğe Bağlı)</label>
-                            <input type="number" step="0.01" class="form-control" name="change_percent" id="edit_change_percent" placeholder="Örn: 2.5 veya -1.8">
+                            <input type="number" step="0.01" class="form-control" name="change_percent" id="edit_change_percent" value="0" placeholder="Örn: 2.5 veya -1.8">
                             <small class="text-muted">Boş bırakılırsa 0 olarak ayarlanır.</small>
                         </div>
                     </div>
@@ -339,8 +339,8 @@ $markets = $stmt->fetchAll(PDO::FETCH_ASSOC);
         // Yeni fiyat alanını temizle
         document.getElementById('new_price_input').value = '';
         
-        // Mevcut değişim yüzdesini göster (opsiyonel)
-        document.getElementById('edit_change_percent').value = changePercent || 0;
+        // Değişim yüzdesini her zaman 0 olarak ayarla (gizli alan)
+                                document.getElementById('edit_change_percent').value = null;
         
         // Modalı aç
         new bootstrap.Modal(document.getElementById('editPriceModal')).show();
