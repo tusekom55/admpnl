@@ -1,0 +1,407 @@
+<?php
+session_start();
+require_once 'config/database.php';
+
+// Basit admin kontrolü
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
+    header('Location: login.php');
+    exit();
+}
+
+$database = new Database();
+$db = $database->getConnection();
+
+// Ayarları yükle
+function getSettings($db) {
+    $settings = [];
+    $query = "SELECT * FROM settings";
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    foreach ($results as $setting) {
+        $settings[$setting['setting_key']] = $setting['setting_value'];
+    }
+    
+    // Varsayılan ayarlar
+    $defaults = [
+        'site_name' => 'GlobalBorsa',
+        'site_description' => 'Kripto Para Alım Satım Platformu',
+        'maintenance_mode' => '0',
+        'registration_enabled' => '1',
+        'trading_fee_percent' => '0.1',
+        'min_deposit_amount' => '10',
+        'min_withdrawal_amount' => '10',
+        'max_withdrawal_amount' => '10000',
+        'contact_email' => 'info@globalborsa.com',
+        'company_address' => 'İstanbul, Türkiye',
+        'api_update_interval' => '30',
+        'email_notifications' => '1',
+        'sms_notifications' => '0'
+    ];
+    
+    return array_merge($defaults, $settings);
+}
+
+// Ayar güncelleme
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'update_settings') {
+    try {
+        foreach ($_POST as $key => $value) {
+            if ($key !== 'action') {
+                // Ayar varsa güncelle, yoksa ekle
+                $query = "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) 
+                         ON DUPLICATE KEY UPDATE setting_value = :value";
+                $stmt = $db->prepare($query);
+                $stmt->bindParam(':key', $key);
+                $stmt->bindParam(':value', $value);
+                $stmt->execute();
+            }
+        }
+        $success_message = "Ayarlar başarıyla güncellendi!";
+    } catch(Exception $e) {
+        $error_message = "Hata: " . $e->getMessage();
+    }
+}
+
+// Cache temizleme
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'clear_cache') {
+    try {
+        // Cache dosyalarını temizle (varsa)
+        $cache_files = glob('cache/*.php');
+        foreach($cache_files as $file) {
+            if(is_file($file)) {
+                unlink($file);
+            }
+        }
+        $success_message = "Cache başarıyla temizlendi!";
+    } catch(Exception $e) {
+        $error_message = "Cache temizlenirken hata oluştu: " . $e->getMessage();
+    }
+}
+
+// Veritabanı optimizasyonu
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'optimize_db') {
+    try {
+        $tables = ['users', 'transactions', 'deposits', 'withdrawals', 'markets', 'settings'];
+        foreach($tables as $table) {
+            $query = "OPTIMIZE TABLE " . $table;
+            $stmt = $db->prepare($query);
+            $stmt->execute();
+        }
+        $success_message = "Veritabanı başarıyla optimize edildi!";
+    } catch(Exception $e) {
+        $error_message = "Veritabanı optimize edilirken hata oluştu: " . $e->getMessage();
+    }
+}
+
+$settings = getSettings($db);
+
+// Sistem istatistikleri
+$stats = [];
+try {
+    // Toplam kullanıcı sayısı
+    $query = "SELECT COUNT(*) as count FROM users";
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+    $stats['total_users'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+    
+    // Aktif kullanıcı sayısı (son 30 gün)
+    $query = "SELECT COUNT(*) as count FROM users WHERE last_login >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+    $stats['active_users'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+    
+    // Toplam işlem sayısı
+    $query = "SELECT COUNT(*) as count FROM transactions";
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+    $stats['total_transactions'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+    
+    // Veritabanı boyutu
+    $query = "SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) AS db_size_mb FROM information_schema.tables WHERE table_schema = DATABASE()";
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stats['db_size'] = $result['db_size_mb'] ?: 0;
+    
+} catch(Exception $e) {
+    $stats = [
+        'total_users' => 0,
+        'active_users' => 0,
+        'total_transactions' => 0,
+        'db_size' => 0
+    ];
+}
+?>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Ayarları - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="admin.php">
+                <i class="fas fa-shield-alt"></i> Admin Panel
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a href="admin.php" class="btn btn-outline-light btn-sm me-2">
+                    <i class="fas fa-arrow-left"></i> Dashboard
+                </a>
+                <a href="logout.php" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1><i class="fas fa-cogs"></i> Sistem Ayarları</h1>
+
+        <?php if (isset($success_message)): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <?php echo $success_message; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($error_message)): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <?php echo $error_message; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <!-- Sistem İstatistikleri -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-2x mb-2"></i>
+                        <h5>Toplam Kullanıcı</h5>
+                        <h3><?php echo number_format($stats['total_users']); ?></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-check fa-2x mb-2"></i>
+                        <h5>Aktif Kullanıcı</h5>
+                        <h3><?php echo number_format($stats['active_users']); ?></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-exchange-alt fa-2x mb-2"></i>
+                        <h5>Toplam İşlem</h5>
+                        <h3><?php echo number_format($stats['total_transactions']); ?></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-database fa-2x mb-2"></i>
+                        <h5>DB Boyutu</h5>
+                        <h3><?php echo $stats['db_size']; ?> MB</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <!-- Genel Ayarlar -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-sliders-h"></i> Genel Ayarlar</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            <input type="hidden" name="action" value="update_settings">
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Site Adı</label>
+                                        <input type="text" class="form-control" name="site_name" value="<?php echo htmlspecialchars($settings['site_name']); ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Site Açıklaması</label>
+                                        <input type="text" class="form-control" name="site_description" value="<?php echo htmlspecialchars($settings['site_description']); ?>">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">İletişim E-posta</label>
+                                        <input type="email" class="form-control" name="contact_email" value="<?php echo htmlspecialchars($settings['contact_email']); ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Şirket Adresi</label>
+                                        <input type="text" class="form-control" name="company_address" value="<?php echo htmlspecialchars($settings['company_address']); ?>">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">İşlem Komisyonu (%)</label>
+                                        <input type="number" step="0.01" class="form-control" name="trading_fee_percent" value="<?php echo $settings['trading_fee_percent']; ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Min. Yatırım ($)</label>
+                                        <input type="number" class="form-control" name="min_deposit_amount" value="<?php echo $settings['min_deposit_amount']; ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Min. Çekim ($)</label>
+                                        <input type="number" class="form-control" name="min_withdrawal_amount" value="<?php echo $settings['min_withdrawal_amount']; ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Max. Çekim ($)</label>
+                                        <input type="number" class="form-control" name="max_withdrawal_amount" value="<?php echo $settings['max_withdrawal_amount']; ?>">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">API Güncelleme Aralığı (saniye)</label>
+                                        <input type="number" class="form-control" name="api_update_interval" value="<?php echo $settings['api_update_interval']; ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Sistem Durumu</label>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="maintenance_mode" value="1" <?php echo $settings['maintenance_mode'] == '1' ? 'checked' : ''; ?>>
+                                            <label class="form-check-label">Bakım Modu</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" name="registration_enabled" value="1" <?php echo $settings['registration_enabled'] == '1' ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Kayıt Açık</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" name="email_notifications" value="1" <?php echo $settings['email_notifications'] == '1' ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Email Bildirimleri</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" name="sms_notifications" value="1" <?php echo $settings['sms_notifications'] == '1' ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">SMS Bildirimleri</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Ayarları Kaydet
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sistem İşlemleri -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-tools"></i> Sistem İşlemleri</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Cache Temizleme -->
+                        <div class="mb-3">
+                            <h6><i class="fas fa-broom"></i> Cache Temizleme</h6>
+                            <p class="text-muted small">Sistem cache dosyalarını temizler</p>
+                            <form method="POST" style="display: inline;">
+                                <input type="hidden" name="action" value="clear_cache">
+                                <button type="submit" class="btn btn-warning btn-sm w-100" onclick="return confirm('Cache temizlensin mi?')">
+                                    <i class="fas fa-trash-alt"></i> Cache Temizle
+                                </button>
+                            </form>
+                        </div>
+
+                        <hr>
+
+                        <!-- Veritabanı Optimizasyonu -->
+                        <div class="mb-3">
+                            <h6><i class="fas fa-database"></i> Veritabanı Optimizasyonu</h6>
+                            <p class="text-muted small">Veritabanı tablolarını optimize eder</p>
+                            <form method="POST" style="display: inline;">
+                                <input type="hidden" name="action" value="optimize_db">
+                                <button type="submit" class="btn btn-info btn-sm w-100" onclick="return confirm('Veritabanı optimize edilsin mi?')">
+                                    <i class="fas fa-wrench"></i> DB Optimize Et
+                                </button>
+                            </form>
+                        </div>
+
+                        <hr>
+
+                        <!-- Hızlı Erişimler -->
+                        <div class="mb-3">
+                            <h6><i class="fas fa-external-link-alt"></i> Hızlı Erişimler</h6>
+                            <div class="d-grid gap-2">
+                                <a href="admin_users.php" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-users"></i> Kullanıcılar
+                                </a>
+                                <a href="admin_deposits.php" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-money-bill"></i> Para Yatırma
+                                </a>
+                                <a href="admin_markets.php" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-chart-line"></i> Marketler
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sistem Bilgileri -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6><i class="fas fa-info-circle"></i> Sistem Bilgileri</h6>
+                    </div>
+                    <div class="card-body">
+                        <small>
+                            <strong>PHP Sürümü:</strong> <?php echo phpversion(); ?><br>
+                            <strong>Sunucu:</strong> <?php echo $_SERVER['SERVER_SOFTWARE']; ?><br>
+                            <strong>Zaman:</strong> <?php echo date('d.m.Y H:i:s'); ?><br>
+                            <strong>Zaman Dilimi:</strong> <?php echo date_default_timezone_get(); ?>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
