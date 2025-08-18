@@ -878,14 +878,27 @@ if (!in_array($current_page, $public_pages)) {
                             $stmt->execute([$_SESSION['user_id']]);
                             $userInfo = $stmt->fetch(PDO::FETCH_ASSOC);
                             
+                            // DEBUG INFO
+                            echo "<!-- DEBUG: User ID: " . $_SESSION['user_id'] . " -->";
+                            echo "<!-- DEBUG: Query: " . $query . " -->";
+                            echo "<!-- DEBUG: User Info: " . print_r($userInfo, true) . " -->";
+                            
                             // Check if user is admin
                             if ($userInfo) {
+                                echo "<!-- DEBUG: is_admin value: " . (isset($userInfo['is_admin']) ? $userInfo['is_admin'] : 'NOT SET') . " -->";
+                                echo "<!-- DEBUG: role value: " . (isset($userInfo['role']) ? $userInfo['role'] : 'NOT SET') . " -->";
+                                
                                 $isAdmin = (
                                     (isset($userInfo['is_admin']) && ($userInfo['is_admin'] == 1 || $userInfo['is_admin'] === '1')) ||
                                     (isset($userInfo['role']) && $userInfo['role'] === 'admin')
                                 );
+                                
+                                echo "<!-- DEBUG: Final isAdmin result: " . ($isAdmin ? 'TRUE' : 'FALSE') . " -->";
+                            } else {
+                                echo "<!-- DEBUG: No user info found -->";
                             }
                         } catch (Exception $e) {
+                            echo "<!-- DEBUG ERROR: " . $e->getMessage() . " -->";
                             $isAdmin = false;
                         }
                         ?>
