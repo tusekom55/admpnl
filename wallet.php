@@ -28,7 +28,7 @@ if ($_POST) {
                     'Minimum deposit amount is ' . MIN_DEPOSIT_AMOUNT . ' TL';
             } elseif ($amount <= 0) {
                 $error = getCurrentLang() == 'tr' ? 'Geçersiz dolar tutarı' : 'Invalid USD amount';
-            } elseif (!in_array($method, ['iban', 'papara'])) {
+            } elseif (!in_array($method, ['bank', 'digital', 'crypto'])) {
                 $error = getCurrentLang() == 'tr' ? 'Geçersiz ödeme yöntemi' : 'Invalid payment method';
             } else {
                 $database = new Database();
@@ -68,7 +68,7 @@ if ($_POST) {
                 $error = getCurrentLang() == 'tr' ? 
                     'Minimum para yatırma tutarı ' . MIN_DEPOSIT_AMOUNT . ' TL' : 
                     'Minimum deposit amount is ' . MIN_DEPOSIT_AMOUNT . ' TL';
-            } elseif (!in_array($method, ['iban', 'papara'])) {
+            } elseif (!in_array($method, ['bank', 'digital', 'crypto'])) {
                 $error = getCurrentLang() == 'tr' ? 'Geçersiz ödeme yöntemi' : 'Invalid payment method';
             } else {
                 $database = new Database();
