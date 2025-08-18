@@ -24,55 +24,93 @@ if (!in_array($current_page, $public_pages)) {
     
     <!-- EMERGENCY MODAL FIX - INLINE CSS -->
     <style>
-        /* EMERGENCY MODAL OVERRIDE */
-        #tradeModal {
-            border: 5px solid red !important;
+        /* MODAL Z-INDEX AND POSITIONING FIX */
+        .modal {
+            z-index: 99999 !important;
         }
         
-        #leverageModal {
-            border: 5px solid blue !important;
+        .modal-backdrop {
+            z-index: 99998 !important;
         }
         
         .modal-dialog {
-            max-width: 200px !important;
-            width: 200px !important;
+            max-width: 350px !important;
+            width: 350px !important;
             margin: 1rem auto !important;
+            position: relative !important;
+            top: 50px !important;
         }
         
         @media (max-width: 768px) {
             .modal-dialog {
-                max-width: 150px !important;
-                width: 150px !important;
-                margin: 0.5rem auto !important;
+                max-width: 85vw !important;
+                width: 85vw !important;
+                margin: 1rem auto !important;
+                top: 80px !important;
             }
         }
         
         .modal-content {
-            max-height: 60vh !important;
+            max-height: 80vh !important;
             overflow: hidden !important;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
         }
         
         .modal-body {
-            padding: 0.5rem !important;
-            font-size: 0.8rem !important;
+            padding: 0.75rem !important;
+            font-size: 0.9rem !important;
+            overflow-y: auto !important;
+            max-height: calc(80vh - 120px) !important;
         }
         
         .modal-header {
-            padding: 0.5rem !important;
+            padding: 0.75rem !important;
+            border-bottom: 1px solid #dee2e6 !important;
         }
         
         .modal-title {
+            font-size: 1rem !important;
+        }
+        
+        .modal .btn {
+            font-size: 0.85rem !important;
+            padding: 0.5rem 0.75rem !important;
+            min-height: 40px !important;
+        }
+        
+        .modal .form-control {
             font-size: 0.9rem !important;
+            padding: 0.5rem !important;
+            min-height: 40px !important;
         }
         
-        .btn {
-            font-size: 0.7rem !important;
-            padding: 0.25rem 0.5rem !important;
+        .modal .input-group-text {
+            font-size: 0.85rem !important;
+            padding: 0.5rem !important;
         }
         
-        .form-control {
-            font-size: 0.8rem !important;
-            padding: 0.25rem !important;
+        .modal .card-body {
+            padding: 0.5rem !important;
+        }
+        
+        .modal .form-label {
+            font-size: 0.85rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+        
+        .modal small {
+            font-size: 0.75rem !important;
+        }
+        
+        /* Center modal properly */
+        .modal.show .modal-dialog {
+            transform: translate(0, 0) !important;
+        }
+        
+        /* Remove debug borders */
+        #tradeModal, #leverageModal {
+            border: none !important;
         }
     </style>
     
