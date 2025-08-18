@@ -19,6 +19,8 @@ if (!in_array($current_page, $public_pages)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom CSS -->
     <link href="assets/css/style.css" rel="stylesheet">
     
@@ -111,6 +113,90 @@ if (!in_array($current_page, $public_pages)) {
         /* Remove debug borders */
         #tradeModal, #leverageModal {
             border: none !important;
+        }
+        
+        /* MODAL TAB STYLING */
+        .modal-tab-nav {
+            padding: 0 !important;
+            margin: 0 !important;
+            background: #f8f9fa !important;
+            border-bottom: 1px solid #dee2e6 !important;
+        }
+        
+        .modal-tab-nav .nav-tabs {
+            margin-bottom: 0 !important;
+            border-bottom: none !important;
+        }
+        
+        .modal-tab-nav .nav-link {
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 0.75rem 1rem !important;
+            font-size: 0.85rem !important;
+            font-weight: 500 !important;
+            color: #6c757d !important;
+            background: transparent !important;
+            border-bottom: 3px solid transparent !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .modal-tab-nav .nav-link.active {
+            color: #007bff !important;
+            background: white !important;
+            border-bottom-color: #007bff !important;
+        }
+        
+        .modal-tab-nav .nav-link:hover {
+            color: #007bff !important;
+            background: rgba(0, 123, 255, 0.1) !important;
+        }
+        
+        /* CHART CONTAINER STYLING */
+        .chart-container {
+            position: relative !important;
+            height: 300px !important;
+            background: white !important;
+            border: 1px solid #e9ecef !important;
+            border-radius: 8px !important;
+            padding: 1rem !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 250px !important;
+                padding: 0.5rem !important;
+            }
+        }
+        
+        .chart-controls {
+            margin-top: 0.75rem !important;
+        }
+        
+        .chart-controls .btn-group {
+            width: 100% !important;
+        }
+        
+        .chart-controls .btn {
+            font-size: 0.75rem !important;
+            padding: 0.375rem 0.5rem !important;
+            border-color: #dee2e6 !important;
+        }
+        
+        .chart-controls .btn.active {
+            background-color: #007bff !important;
+            border-color: #007bff !important;
+            color: white !important;
+        }
+        
+        .chart-controls .btn:not(.active) {
+            background-color: white !important;
+            color: #6c757d !important;
+        }
+        
+        .chart-controls .btn:not(.active):hover {
+            background-color: #f8f9fa !important;
+            color: #007bff !important;
         }
     </style>
     

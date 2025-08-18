@@ -1136,6 +1136,263 @@ function closeErrorPopup() {
     }
 }
 
+// Mobile trading calculation (separate from desktop)
+function calculateSimpleTradeModal() {
+    const usdAmount = parseFloat(document.getElementById('usd_amount_mobile').value) || 0;
+    const priceUSD = parseFloat(document.getElementById('modalPrice').textContent.replace(',', '.'));
+    const submitBtn = document.getElementById('buyButtonMobile');
+    
+    if (usdAmount <= 0) {
+        // Reset displays if no amount
+        document.getElementById('totalValueMobile').textContent = '$0.00';
+        document.getElementById('requiredAmountMobile').textContent = '$0.00';
+        document.getElementById('remainingBalanceMobile').textContent = '$0.00';
+        
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.className = 'btn btn-success w-100';
+        submitBtn.innerHTML = '<i class="fas fa-shopping-cart me-2"></i>SATIN AL';
+        return;
+    }
+    
+    const fee = 0; // No fee for simple trading
+    let currentBalance, totalWithFee, remainingBalance;
+    
+    if (TRADING_CURRENCY === 1) { // TL Mode
+        // Convert USD to TL 
+        const totalTL = usdAmount * USD_TRY_RATE;
+        const feeTL = fee * USD_TRY_RATE;
+        totalWithFee = totalTL + feeTL;
+        
+        // Get current balance
+        currentBalance = <?php echo isLoggedIn() ? getUserBalance($_SESSION['user_id'], 'tl') : 10000; ?>;
+        remainingBalance = currentBalance - totalWithFee;
+        
+        // Update display
+        document.getElementById('totalValueMobile').textContent = formatTurkishNumber(totalTL, 2) + ' TL';
+        document.getElementById('requiredAmountMobile').textContent = formatTurkishNumber(totalWithFee, 2) + ' TL';
+        document.getElementById('remainingBalanceMobile').textContent = formatTurkishNumber(remainingBalance, 2) + ' TL';
+        
+    } else { // USD Mode
+        totalWithFee = usdAmount + fee;
+        
+        // Get current balance  
+        currentBalance = <?php echo isLoggedIn() ? getUserBalance($_SESSION['user_id'], 'usd') : 1000; ?>;
+        remainingBalance = currentBalance - totalWithFee;
+        
+        // Update display
+        document.getElementById('totalValueMobile').textContent = formatTurkishNumber(usdAmount, 2) + ' USD';
+        document.getElementById('requiredAmountMobile').textContent = formatTurkishNumber(totalWithFee, 2) + ' USD';
+        document.getElementById('remainingBalanceMobile').textContent = formatTurkishNumber(remainingBalance, 2) + ' USD';
+    }
+    
+    // SMART BUTTON CONTROL - Anlık Bakiye Kontrolü
+    if (totalWithFee > currentBalance) {
+        // Yetersiz Bakiye - Kırmızı Buton
+        submitBtn.disabled = true;
+        submitBtn.className = 'btn btn-danger w-100';
+        submitBtn.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>YETERSİZ BAKİYE';
+    } else {
+        // Yeterli Bakiye - Yeşil Buton
+        submitBtn.disabled = false;
+        submitBtn.className = 'btn btn-success w-100';
+        submitBtn.innerHTML = '<i class="fas fa-shopping-cart me-2"></i>SATIN AL';
+    }
+    
+    // Calculate lot equivalent for display
+    const lotAmount = usdAmount / priceUSD;
+    document.getElementById('lotAmountMobile').textContent = formatTurkishNumber(lotAmount, 4) + ' Lot';
+}
+
+// Chart variables
+let desktopChart = null;
+let mobileChart = null;
+let currentSymbol = '';
+
+// Chart initialization
+function initializeCharts(symbol, price) {
+    currentSymbol = symbol;
+    const currentPrice = parseFloat(price);
+    
+    // Generate sample data based on current price
+    const sampleData = generateSamplePriceData(currentPrice, 24); // 24 hours of hourly data
+    
+    // Destroy existing charts
+    if (desktopChart) {
+        desktopChart.destroy();
+    }
+    if (mobileChart) {
+        mobileChart.destroy();
+    }
+    
+    // Desktop chart
+    const desktopCtx = document.getElementById('desktopPriceChart');
+    if (desktopCtx) {
+        desktopChart = createPriceChart(desktopCtx, sampleData, symbol);
+    }
+    
+    // Mobile chart
+    const mobileCtx = document.getElementById('mobilePriceChart');
+    if (mobileCtx) {
+        mobileChart = createPriceChart(mobileCtx, sampleData, symbol);
+    }
+}
+
+// Generate sample price data
+function generateSamplePriceData(currentPrice, hours) {
+    const data = [];
+    const labels = [];
+    let basePrice = currentPrice * 0.95; // Start 5% lower
+    
+    for (let i = 0; i < hours; i++) {
+        const change = (Math.random() - 0.5) * 0.02; // Random change ±1%
+        basePrice = basePrice * (1 + change);
+        
+        const time = new Date();
+        time.setHours(time.getHours() - (hours - i));
+        
+        data.push(basePrice);
+        labels.push(time.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }));
+    }
+    
+    // Ensure last price matches current price
+    data[data.length - 1] = currentPrice;
+    
+    return { prices: data, labels: labels };
+}
+
+// Create chart with Chart.js
+function createPriceChart(ctx, data, symbol) {
+    return new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: `${symbol} Fiyat`,
+                data: data.prices,
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.1,
+                pointRadius: 0,
+                pointHoverRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    display: true,
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        maxTicksLimit: 6,
+                        font: {
+                            size: 10
+                        }
+                    }
+                },
+                y: {
+                    display: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    ticks: {
+                        font: {
+                            size: 10
+                        },
+                        callback: function(value) {
+                            return '$' + value.toFixed(2);
+                        }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
+        }
+    });
+}
+
+// Enhanced openTradeModal with chart initialization
+function openTradeModal(button) {
+    const symbol = button.dataset.symbol;
+    const name = button.dataset.name;
+    const price = parseFloat(button.dataset.price);
+    const action = button.dataset.action;
+    
+    // Update modal content
+    document.getElementById('modalSymbol').textContent = symbol;
+    document.getElementById('modalName').textContent = name;
+    document.getElementById('modalPrice').textContent = formatPrice(price);
+    
+    // Set hidden fields for forms
+    document.getElementById('buySymbol').value = symbol;
+    if (document.getElementById('buySymbolMobile')) {
+        document.getElementById('buySymbolMobile').value = symbol;
+    }
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('tradeModal'));
+    modal.show();
+    
+    // Initialize charts after modal is shown
+    setTimeout(() => {
+        initializeCharts(symbol, price);
+    }, 300);
+}
+
+// Chart period change handlers
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('chart-period') || e.target.classList.contains('chart-period-mobile')) {
+        // Remove active class from all period buttons
+        document.querySelectorAll('.chart-period, .chart-period-mobile').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Add active class to clicked button
+        e.target.classList.add('active');
+        
+        // Generate new data based on period
+        const period = e.target.dataset.period;
+        const currentPrice = parseFloat(document.getElementById('modalPrice').textContent);
+        let hours;
+        
+        switch(period) {
+            case '1H': hours = 24; break;
+            case '1D': hours = 24; break;
+            case '1W': hours = 24 * 7; break;
+            case '1M': hours = 24 * 30; break;
+            case '3M': hours = 24 * 90; break;
+            default: hours = 24;
+        }
+        
+        const sampleData = generateSamplePriceData(currentPrice, Math.min(hours, 100));
+        
+        // Update charts
+        if (desktopChart) {
+            desktopChart.data.labels = sampleData.labels;
+            desktopChart.data.datasets[0].data = sampleData.prices;
+            desktopChart.update();
+        }
+        
+        if (mobileChart) {
+            mobileChart.data.labels = sampleData.labels;
+            mobileChart.data.datasets[0].data = sampleData.prices;
+            mobileChart.update();
+        }
+    }
+});
+
 // Check for success/error messages on page load
 document.addEventListener('DOMContentLoaded', function() {
     <?php if ($success_message): ?>
@@ -1148,7 +1405,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- SIMPLE Trading Modal -->
+<!-- ENHANCED Trading Modal with Chart -->
 <div class="modal fade" id="tradeModal" tabindex="-1" aria-labelledby="tradeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-responsive">
         <div class="modal-content">
@@ -1168,58 +1425,175 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <!-- Simple Buy Form -->
-                <?php if (isLoggedIn()): ?>
-                <form id="buyForm" method="POST" action="markets.php?group=<?php echo $category; ?>">
-                    <input type="hidden" name="trade_action" value="buy">
-                    <input type="hidden" name="symbol" id="buySymbol" value="">
-                    
-                    <div class="mb-3">
-                        <label class="form-label">USD Miktar</label>
-                        <div class="input-group">
-                            <input type="number" class="form-control" id="usd_amount" name="usd_amount" step="0.01" min="0.01" 
-                                   placeholder="10.00" oninput="calculateSimpleTrade()" required>
-                            <span class="input-group-text">USD</span>
-                        </div>
-                        <small class="text-muted">Satın almak istediğiniz USD tutarı</small>
-                    </div>
-                    
-                    <!-- Trade Summary -->
-                    <div class="card border-0 bg-light mb-3">
-                        <div class="card-body p-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <small class="text-muted">Toplam Değer:</small>
-                                <small class="fw-bold" id="totalValue">$0.00</small>
-                            </div>
-                            <div class="d-flex justify-content-between mb-1">
-                                <small class="text-muted">Lot Miktarı:</small>
-                                <small class="fw-bold" id="lotAmount">0.00 Lot</small>
-                            </div>
-                            <div class="d-flex justify-content-between mb-1">
-                                <small class="text-muted">Ödenecek Tutar:</small>
-                                <small class="fw-bold" id="requiredAmount">$0.00</small>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <small class="text-muted">Kalan Bakiye:</small>
-                                <small class="fw-bold" id="remainingBalance">$0.00</small>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-success w-100">
-                        <i class="fas fa-shopping-cart me-2"></i>SATIN AL
+            
+            <!-- Tab Navigation for Mobile -->
+            <div class="modal-tab-nav d-md-none">
+                <div class="nav nav-tabs border-0" id="nav-tab" role="tablist">
+                    <button class="nav-link active flex-fill" id="nav-trade-tab" data-bs-toggle="tab" 
+                            data-bs-target="#nav-trade" type="button" role="tab" aria-controls="nav-trade" aria-selected="true">
+                        <i class="fas fa-shopping-cart me-1"></i>İşlem
                     </button>
-                </form>
-                <?php else: ?>
-                <div class="text-center py-4">
-                    <i class="fas fa-user-lock fa-3x text-muted mb-3"></i>
-                    <p class="text-muted mb-3">İşlem yapmak için giriş yapmanız gerekiyor</p>
-                    <a href="login.php" class="btn btn-primary">
-                        <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
-                    </a>
+                    <button class="nav-link flex-fill" id="nav-chart-tab" data-bs-toggle="tab" 
+                            data-bs-target="#nav-chart" type="button" role="tab" aria-controls="nav-chart" aria-selected="false">
+                        <i class="fas fa-chart-line me-1"></i>Grafik
+                    </button>
                 </div>
-                <?php endif; ?>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Desktop: Side by side layout -->
+                <div class="d-none d-md-block">
+                    <div class="row">
+                        <!-- Trading Form Column -->
+                        <div class="col-md-6">
+                            <h6 class="mb-3"><i class="fas fa-shopping-cart me-2"></i>İşlem Formu</h6>
+                            <?php if (isLoggedIn()): ?>
+                            <form id="buyForm" method="POST" action="markets.php?group=<?php echo $category; ?>">
+                                <input type="hidden" name="trade_action" value="buy">
+                                <input type="hidden" name="symbol" id="buySymbol" value="">
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">USD Miktar</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="usd_amount" name="usd_amount" step="0.01" min="0.01" 
+                                               placeholder="10.00" oninput="calculateSimpleTrade()" required>
+                                        <span class="input-group-text">USD</span>
+                                    </div>
+                                    <small class="text-muted">Satın almak istediğiniz USD tutarı</small>
+                                </div>
+                                
+                                <!-- Trade Summary -->
+                                <div class="card border-0 bg-light mb-3">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small class="text-muted">Toplam Değer:</small>
+                                            <small class="fw-bold" id="totalValue">$0.00</small>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small class="text-muted">Lot Miktarı:</small>
+                                            <small class="fw-bold" id="lotAmount">0.00 Lot</small>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small class="text-muted">Ödenecek Tutar:</small>
+                                            <small class="fw-bold" id="requiredAmount">$0.00</small>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-muted">Kalan Bakiye:</small>
+                                            <small class="fw-bold" id="remainingBalance">$0.00</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-shopping-cart me-2"></i>SATIN AL
+                                </button>
+                            </form>
+                            <?php else: ?>
+                            <div class="text-center py-4">
+                                <i class="fas fa-user-lock fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-3">İşlem yapmak için giriş yapmanız gerekiyor</p>
+                                <a href="login.php" class="btn btn-primary">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
+                                </a>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <!-- Chart Column -->
+                        <div class="col-md-6">
+                            <h6 class="mb-3"><i class="fas fa-chart-line me-2"></i>Fiyat Grafiği</h6>
+                            <div class="chart-container">
+                                <canvas id="desktopPriceChart" width="400" height="300"></canvas>
+                            </div>
+                            <!-- Chart Controls -->
+                            <div class="chart-controls mt-3">
+                                <div class="btn-group w-100" role="group">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm chart-period active" data-period="1H">1S</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm chart-period" data-period="1D">1G</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm chart-period" data-period="1W">1H</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm chart-period" data-period="1M">1A</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm chart-period" data-period="3M">3A</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile: Tab content -->
+                <div class="d-md-none">
+                    <div class="tab-content" id="nav-tabContent">
+                        <!-- Trading Tab -->
+                        <div class="tab-pane fade show active" id="nav-trade" role="tabpanel" aria-labelledby="nav-trade-tab">
+                            <?php if (isLoggedIn()): ?>
+                            <form id="buyFormMobile" method="POST" action="markets.php?group=<?php echo $category; ?>">
+                                <input type="hidden" name="trade_action" value="buy">
+                                <input type="hidden" name="symbol" id="buySymbolMobile" value="">
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">USD Miktar</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="usd_amount_mobile" name="usd_amount" step="0.01" min="0.01" 
+                                               placeholder="10.00" oninput="calculateSimpleTradeModal()" required>
+                                        <span class="input-group-text">USD</span>
+                                    </div>
+                                    <small class="text-muted">Satın almak istediğiniz USD tutarı</small>
+                                </div>
+                                
+                                <!-- Trade Summary -->
+                                <div class="card border-0 bg-light mb-3">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small class="text-muted">Toplam Değer:</small>
+                                            <small class="fw-bold" id="totalValueMobile">$0.00</small>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small class="text-muted">Lot Miktarı:</small>
+                                            <small class="fw-bold" id="lotAmountMobile">0.00 Lot</small>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small class="text-muted">Ödenecek Tutar:</small>
+                                            <small class="fw-bold" id="requiredAmountMobile">$0.00</small>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-muted">Kalan Bakiye:</small>
+                                            <small class="fw-bold" id="remainingBalanceMobile">$0.00</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-success w-100" id="buyButtonMobile">
+                                    <i class="fas fa-shopping-cart me-2"></i>SATIN AL
+                                </button>
+                            </form>
+                            <?php else: ?>
+                            <div class="text-center py-4">
+                                <i class="fas fa-user-lock fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-3">İşlem yapmak için giriş yapmanız gerekiyor</p>
+                                <a href="login.php" class="btn btn-primary">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
+                                </a>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <!-- Chart Tab -->
+                        <div class="tab-pane fade" id="nav-chart" role="tabpanel" aria-labelledby="nav-chart-tab">
+                            <div class="chart-container">
+                                <canvas id="mobilePriceChart" width="400" height="250"></canvas>
+                            </div>
+                            <!-- Chart Controls -->
+                            <div class="chart-controls mt-3">
+                                <div class="btn-group w-100" role="group">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm chart-period-mobile active" data-period="1H">1S</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm chart-period-mobile" data-period="1D">1G</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm chart-period-mobile" data-period="1W">1H</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm chart-period-mobile" data-period="1M">1A</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm chart-period-mobile" data-period="3M">3A</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
