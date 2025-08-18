@@ -45,10 +45,18 @@ if (!in_array($current_page, $public_pages)) {
         
         @media (max-width: 768px) {
             .modal-dialog {
-                max-width: 85vw !important;
-                width: 85vw !important;
-                margin: 1rem auto !important;
-                top: 80px !important;
+                max-width: 95vw !important;
+                width: 95vw !important;
+                margin: 0.5rem auto !important;
+                top: 20px !important;
+            }
+            
+            /* Leverage modal specific mobile optimizations */
+            .modal-dialog.modal-responsive-leverage {
+                max-width: 98vw !important;
+                width: 98vw !important;
+                margin: 0.25rem auto !important;
+                top: 10px !important;
             }
         }
         
@@ -197,6 +205,135 @@ if (!in_array($current_page, $public_pages)) {
         .chart-controls .btn:not(.active):hover {
             background-color: #f8f9fa !important;
             color: #007bff !important;
+        }
+        
+        /* LEVERAGE MODAL MOBILE OPTIMIZATIONS */
+        @media (max-width: 768px) {
+            /* Modal content height optimization */
+            .modal-content {
+                max-height: 95vh !important;
+            }
+            
+            .modal-body {
+                max-height: calc(95vh - 120px) !important;
+                padding: 0.5rem !important;
+            }
+            
+            /* Leverage modal specific styles */
+            #leverageModal .modal-body {
+                font-size: 0.8rem !important;
+            }
+            
+            #leverageModal .form-label {
+                font-size: 0.75rem !important;
+                font-weight: 600 !important;
+                margin-bottom: 0.25rem !important;
+            }
+            
+            #leverageModal .form-control,
+            #leverageModal .form-select {
+                font-size: 0.8rem !important;
+                padding: 0.4rem !important;
+                min-height: 36px !important;
+            }
+            
+            #leverageModal .input-group-text {
+                font-size: 0.75rem !important;
+                padding: 0.4rem 0.5rem !important;
+            }
+            
+            #leverageModal .card {
+                margin-bottom: 0.5rem !important;
+            }
+            
+            #leverageModal .card-body {
+                padding: 0.4rem !important;
+            }
+            
+            #leverageModal .card-header {
+                padding: 0.4rem 0.5rem !important;
+            }
+            
+            #leverageModal .card-header h6 {
+                font-size: 0.8rem !important;
+                margin-bottom: 0 !important;
+            }
+            
+            /* Compact calculation display */
+            #leverageModal .card-body .row.text-center .col-6,
+            #leverageModal .card-body .row.text-center .col-md-3 {
+                margin-bottom: 0.5rem !important;
+                padding: 0.25rem !important;
+            }
+            
+            #leverageModal .card-body small {
+                font-size: 0.65rem !important;
+                line-height: 1.2 !important;
+            }
+            
+            #leverageModal .card-body strong {
+                font-size: 0.75rem !important;
+                display: block !important;
+                margin-top: 0.1rem !important;
+            }
+            
+            /* Trading buttons mobile optimization */
+            #leverageModal .d-flex.gap-2 {
+                gap: 0.5rem !important;
+                margin-top: 0.5rem !important;
+            }
+            
+            #leverageModal .d-flex.gap-2 .btn {
+                font-size: 0.75rem !important;
+                padding: 0.5rem 0.25rem !important;
+                min-height: 40px !important;
+            }
+            
+            /* Alert box optimization */
+            #leverageModal .alert {
+                margin-top: 0.5rem !important;
+                margin-bottom: 0 !important;
+                padding: 0.5rem !important;
+                font-size: 0.7rem !important;
+            }
+            
+            #leverageModal .alert strong {
+                font-size: 0.7rem !important;
+                display: inline !important;
+                margin-top: 0 !important;
+            }
+            
+            /* Row spacing optimization */
+            #leverageModal .row {
+                margin-bottom: 0.5rem !important;
+            }
+            
+            #leverageModal .col-md-6 {
+                margin-bottom: 0.5rem !important;
+            }
+            
+            /* Modal header mobile optimization */
+            #leverageModal .modal-header {
+                padding: 0.5rem !important;
+            }
+            
+            #leverageModal .modal-header .d-flex > div:first-child {
+                flex-shrink: 0 !important;
+            }
+            
+            #leverageModal .modal-header .ms-auto {
+                text-align: right !important;
+                min-width: 80px !important;
+            }
+            
+            #leverageModal .modal-header .h5 {
+                font-size: 0.9rem !important;
+            }
+            
+            #leverageModal .modal-header .badge {
+                font-size: 0.6rem !important;
+                padding: 0.2rem 0.4rem !important;
+            }
         }
     </style>
     
