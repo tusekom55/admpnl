@@ -38,11 +38,27 @@ if ($_POST) {
                     $stmt->execute([$deposit_id]);
                     
                     // Deposit type'a göre uygun bakiyeye ekle
+                    $is_usd_deposit = false;
+                    $usd_amount = $deposit['amount'];
+                    
                     if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd') {
+                        $is_usd_deposit = true;
+                    } elseif (strpos($deposit['reference'], '→ USD:') !== false || strpos($deposit['reference'], 'USD:') !== false) {
+                        // Fallback: Reference field'dan USD deposit olup olmadığını anla
+                        $is_usd_deposit = true;
+                        // Reference'dan USD miktarını çıkar - farklı formatları dene
+                        if (preg_match('/→\s*USD:\s*([\d.,]+)/', $deposit['reference'], $matches)) {
+                            $usd_amount = (float)str_replace(',', '.', $matches[1]);
+                        } elseif (preg_match('/USD:\s*([\d.,]+)/', $deposit['reference'], $matches)) {
+                            $usd_amount = (float)str_replace(',', '.', $matches[1]);
+                        }
+                    }
+                    
+                    if ($is_usd_deposit) {
                         // TL-to-USD deposit - USD bakiyesine ekle
                         $query = "UPDATE users SET balance_usd = balance_usd + ? WHERE id = ?";
                         $stmt = $db->prepare($query);
-                        $stmt->execute([$deposit['amount'], $deposit['user_id']]);
+                        $stmt->execute([$usd_amount, $deposit['user_id']]);
                     } else {
                         // Normal TL deposit - TL bakiyesine ekle
                         $query = "UPDATE users SET balance_tl = balance_tl + ? WHERE id = ?";
@@ -162,13 +178,40 @@ $recent_deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <small class="text-muted"><?php echo htmlspecialchars($deposit['email']); ?></small>
                                     </td>
                                     <td>
-                                        <?php if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd'): ?>
-                                            <strong class="text-primary"><?php echo number_format($deposit['amount'], 4); ?> USD</strong>
-                                            <?php if (isset($deposit['tl_amount']) && $deposit['tl_amount'] > 0): ?>
-                                                <br><small class="text-muted">(<?php echo number_format($deposit['tl_amount'], 2); ?> TL ödendi)</small>
+                                        <?php 
+                                        $is_usd_deposit = false;
+                                        $usd_amount = $deposit['amount'];
+                                        $tl_amount = 0;
+                                        $exchange_rate = 0;
+                                        
+                                        if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd') {
+                                            $is_usd_deposit = true;
+                                            $tl_amount = $deposit['tl_amount'] ?? 0;
+                                            $exchange_rate = $deposit['exchange_rate'] ?? 0;
+                        } elseif (strpos($deposit['reference'], '→ USD:') !== false || strpos($deposit['reference'], 'USD:') !== false) {
+                            // Fallback: Reference field'dan bilgileri parse et
+                            $is_usd_deposit = true;
+                            if (preg_match('/TL:\s*([\d.,]+)/', $deposit['reference'], $matches)) {
+                                $tl_amount = (float)str_replace(',', '.', $matches[1]);
+                            }
+                            if (preg_match('/→\s*USD:\s*([\d.,]+)/', $deposit['reference'], $matches)) {
+                                $usd_amount = (float)str_replace(',', '.', $matches[1]);
+                            } elseif (preg_match('/USD:\s*([\d.,]+)/', $deposit['reference'], $matches)) {
+                                $usd_amount = (float)str_replace(',', '.', $matches[1]);
+                            }
+                            if (preg_match('/Rate:\s*([\d.,]+)/', $deposit['reference'], $matches)) {
+                                $exchange_rate = (float)str_replace(',', '.', $matches[1]);
+                            }
+                        }
+                                        ?>
+                                        
+                                        <?php if ($is_usd_deposit): ?>
+                                            <strong class="text-primary"><?php echo number_format($usd_amount, 4); ?> USD</strong>
+                                            <?php if ($tl_amount > 0): ?>
+                                                <br><small class="text-muted">(<?php echo number_format($tl_amount, 2); ?> TL ödendi)</small>
                                             <?php endif; ?>
-                                            <?php if (isset($deposit['exchange_rate']) && $deposit['exchange_rate'] > 0): ?>
-                                                <br><small class="text-info">Kur: <?php echo number_format($deposit['exchange_rate'], 4); ?></small>
+                                            <?php if ($exchange_rate > 0): ?>
+                                                <br><small class="text-info">Kur: <?php echo number_format($exchange_rate, 4); ?></small>
                                             <?php endif; ?>
                                         <?php else: ?>
                                             <strong class="text-success"><?php echo number_format($deposit['amount'], 2); ?> TL</strong>
@@ -239,10 +282,31 @@ $recent_deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo $deposit['id']; ?></td>
                                     <td><?php echo htmlspecialchars($deposit['username']); ?></td>
                                     <td>
-                                        <?php if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd'): ?>
-                                            <?php echo number_format($deposit['amount'], 4); ?> USD
-                                            <?php if (isset($deposit['tl_amount']) && $deposit['tl_amount'] > 0): ?>
-                                                <br><small class="text-muted">(<?php echo number_format($deposit['tl_amount'], 2); ?> TL)</small>
+                                        <?php 
+                                        $is_usd_deposit = false;
+                                        $usd_amount = $deposit['amount'];
+                                        $tl_amount = 0;
+                                        
+                                        if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd') {
+                                            $is_usd_deposit = true;
+                                            $tl_amount = $deposit['tl_amount'] ?? 0;
+                        } elseif (strpos($deposit['reference'], '→ USD:') !== false || strpos($deposit['reference'], 'USD:') !== false) {
+                            $is_usd_deposit = true;
+                            if (preg_match('/TL:\s*([\d.,]+)/', $deposit['reference'], $matches)) {
+                                $tl_amount = (float)str_replace(',', '.', $matches[1]);
+                            }
+                            if (preg_match('/→\s*USD:\s*([\d.,]+)/', $deposit['reference'], $matches)) {
+                                $usd_amount = (float)str_replace(',', '.', $matches[1]);
+                            } elseif (preg_match('/USD:\s*([\d.,]+)/', $deposit['reference'], $matches)) {
+                                $usd_amount = (float)str_replace(',', '.', $matches[1]);
+                            }
+                        }
+                                        ?>
+                                        
+                                        <?php if ($is_usd_deposit): ?>
+                                            <?php echo number_format($usd_amount, 4); ?> USD
+                                            <?php if ($tl_amount > 0): ?>
+                                                <br><small class="text-muted">(<?php echo number_format($tl_amount, 2); ?> TL)</small>
                                             <?php endif; ?>
                                         <?php else: ?>
                                             <?php echo number_format($deposit['amount'], 2); ?> TL
