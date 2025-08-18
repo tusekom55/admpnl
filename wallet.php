@@ -34,17 +34,32 @@ if ($_POST) {
                 $database = new Database();
                 $db = $database->getConnection();
                 
-                // Insert deposit record with TL-to-USD conversion info
-                $query = "INSERT INTO deposits (user_id, amount, method, reference, deposit_type, tl_amount, usd_amount, exchange_rate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-                $stmt = $db->prepare($query);
-                
-                $exchange_rate = $usd_try_rate;
-                
-                if ($stmt->execute([$user_id, $amount, $method, $reference, 'tl_to_usd', $tl_amount, $amount, $exchange_rate])) {
-                    $success = t('deposit_request_sent');
-                    logActivity($user_id, 'deposit_request', "TL-to-USD Deposit: $tl_amount TL → $amount USD (Rate: $exchange_rate), Method: $method");
-                } else {
-                    $error = getCurrentLang() == 'tr' ? 'Bir hata oluştu' : 'An error occurred';
+                // Check if new columns exist, if not use basic insert
+                try {
+                    $query = "INSERT INTO deposits (user_id, amount, method, reference, deposit_type, tl_amount, usd_amount, exchange_rate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    $stmt = $db->prepare($query);
+                    
+                    $exchange_rate = $usd_try_rate;
+                    
+                    if ($stmt->execute([$user_id, $amount, $method, $reference, 'tl_to_usd', $tl_amount, $amount, $exchange_rate])) {
+                        $success = t('deposit_request_sent');
+                        logActivity($user_id, 'deposit_request', "TL-to-USD Deposit: $tl_amount TL → $amount USD (Rate: $exchange_rate), Method: $method");
+                    } else {
+                        $error = getCurrentLang() == 'tr' ? 'Bir hata oluştu' : 'An error occurred';
+                    }
+                } catch (PDOException $e) {
+                    // Fallback to basic insert if new columns don't exist
+                    $query = "INSERT INTO deposits (user_id, amount, method, reference) VALUES (?, ?, ?, ?)";
+                    $stmt = $db->prepare($query);
+                    
+                    $deposit_reference = $reference . " (TL: $tl_amount → USD: $amount, Rate: $usd_try_rate)";
+                    
+                    if ($stmt->execute([$user_id, $amount, $method, $deposit_reference])) {
+                        $success = t('deposit_request_sent');
+                        logActivity($user_id, 'deposit_request', "TL-to-USD Deposit: $tl_amount TL → $amount USD (Rate: $usd_try_rate), Method: $method");
+                    } else {
+                        $error = getCurrentLang() == 'tr' ? 'Bir hata oluştu' : 'An error occurred';
+                    }
                 }
             }
         } else {
@@ -59,14 +74,27 @@ if ($_POST) {
                 $database = new Database();
                 $db = $database->getConnection();
                 
-                $query = "INSERT INTO deposits (user_id, amount, method, reference, deposit_type) VALUES (?, ?, ?, ?, ?)";
-                $stmt = $db->prepare($query);
-                
-                if ($stmt->execute([$user_id, $amount, $method, $reference, 'normal'])) {
-                    $success = t('deposit_request_sent');
-                    logActivity($user_id, 'deposit_request', "Amount: $amount TL, Method: $method");
-                } else {
-                    $error = getCurrentLang() == 'tr' ? 'Bir hata oluştu' : 'An error occurred';
+                try {
+                    $query = "INSERT INTO deposits (user_id, amount, method, reference, deposit_type) VALUES (?, ?, ?, ?, ?)";
+                    $stmt = $db->prepare($query);
+                    
+                    if ($stmt->execute([$user_id, $amount, $method, $reference, 'normal'])) {
+                        $success = t('deposit_request_sent');
+                        logActivity($user_id, 'deposit_request', "Amount: $amount TL, Method: $method");
+                    } else {
+                        $error = getCurrentLang() == 'tr' ? 'Bir hata oluştu' : 'An error occurred';
+                    }
+                } catch (PDOException $e) {
+                    // Fallback to basic insert if deposit_type column doesn't exist
+                    $query = "INSERT INTO deposits (user_id, amount, method, reference) VALUES (?, ?, ?, ?)";
+                    $stmt = $db->prepare($query);
+                    
+                    if ($stmt->execute([$user_id, $amount, $method, $reference])) {
+                        $success = t('deposit_request_sent');
+                        logActivity($user_id, 'deposit_request', "Amount: $amount TL, Method: $method");
+                    } else {
+                        $error = getCurrentLang() == 'tr' ? 'Bir hata oluştu' : 'An error occurred';
+                    }
                 }
             }
         }
