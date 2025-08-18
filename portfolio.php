@@ -733,54 +733,54 @@ include 'includes/header.php';
                                     <td class="text-center py-3">
                                         <?php 
                                         $transaction_type = $transaction['type'];
-                                        $transaction_type_upper = strtoupper($transaction_type);
                                         
-                                        // Handle case-insensitive matching and various formats
-                                        if (strtolower($transaction_type) == 'buy'): ?>
-                                            <span class="badge bg-success">
-                                                <i class="fas fa-arrow-up me-1"></i>ALIM
-                                            </span>
-                                        <?php elseif (strtolower($transaction_type) == 'sell'): ?>
-                                            <span class="badge bg-danger">
-                                                <i class="fas fa-arrow-down me-1"></i>SATIM
-                                            </span>
-                                        <?php elseif (in_array($transaction_type_upper, ['LEVERAGE_LONG', 'LONG', 'OPEN_LONG'])): ?>
-                                            <span class="badge bg-warning">
-                                                <i class="fas fa-bolt me-1"></i>LONG
-                                            </span>
-                                        <?php elseif (in_array($transaction_type_upper, ['LEVERAGE_SHORT', 'SHORT', 'OPEN_SHORT'])): ?>
-                                            <span class="badge bg-warning">
-                                                <i class="fas fa-bolt me-1"></i>SHORT
-                                            </span>
-                                        <?php elseif (in_array($transaction_type_upper, ['CLOSE_LONG', 'LONG_CLOSE'])): ?>
-                                            <span class="badge bg-secondary">
-                                                <i class="fas fa-times me-1"></i>LONG KAPAT
-                                            </span>
-                                        <?php elseif (in_array($transaction_type_upper, ['CLOSE_SHORT', 'SHORT_CLOSE'])): ?>
-                                            <span class="badge bg-secondary">
-                                                <i class="fas fa-times me-1"></i>SHORT KAPAT
-                                            </span>
-                                        <?php elseif (stripos($transaction_type, 'leverage') !== false): ?>
-                                            <span class="badge bg-warning">
-                                                <i class="fas fa-bolt me-1"></i>KALDIRAÇ
-                                            </span>
-                                        <?php elseif (stripos($transaction_type, 'close') !== false): ?>
-                                            <span class="badge bg-secondary">
-                                                <i class="fas fa-times me-1"></i>KAPAT
-                                            </span>
-                                        <?php elseif (stripos($transaction_type, 'long') !== false): ?>
-                                            <span class="badge bg-success">
-                                                <i class="fas fa-trending-up me-1"></i>LONG
-                                            </span>
-                                        <?php elseif (stripos($transaction_type, 'short') !== false): ?>
-                                            <span class="badge bg-danger">
-                                                <i class="fas fa-trending-down me-1"></i>SHORT
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="badge bg-info">
-                                                <i class="fas fa-exchange-alt me-1"></i><?php echo strtoupper($transaction_type); ?>
-                                            </span>
-                                        <?php endif; ?>
+                                        // Convert transaction type to user-friendly Turkish display
+                                        $display_text = '';
+                                        $badge_class = 'bg-info';
+                                        $icon = 'fas fa-exchange-alt';
+                                        
+                                        switch (strtoupper($transaction_type)) {
+                                            case 'BUY':
+                                                $display_text = 'ALIM';
+                                                $badge_class = 'bg-success';
+                                                $icon = 'fas fa-arrow-up';
+                                                break;
+                                            case 'SELL':
+                                                $display_text = 'SATIM';
+                                                $badge_class = 'bg-danger';
+                                                $icon = 'fas fa-arrow-down';
+                                                break;
+                                            case 'LEVERAGE_LONG':
+                                                $display_text = 'LONG';
+                                                $badge_class = 'bg-warning';
+                                                $icon = 'fas fa-bolt';
+                                                break;
+                                            case 'LEVERAGE_SHORT':
+                                                $display_text = 'SHORT';
+                                                $badge_class = 'bg-warning';
+                                                $icon = 'fas fa-bolt';
+                                                break;
+                                            case 'CLOSE_LONG':
+                                                $display_text = 'LONG KAPAT';
+                                                $badge_class = 'bg-secondary';
+                                                $icon = 'fas fa-times';
+                                                break;
+                                            case 'CLOSE_SHORT':
+                                                $display_text = 'SHORT KAPAT';
+                                                $badge_class = 'bg-secondary';
+                                                $icon = 'fas fa-times';
+                                                break;
+                                            default:
+                                                // Show the transaction type as-is for any unrecognized types
+                                                $display_text = strtoupper($transaction_type);
+                                                $badge_class = 'bg-info';
+                                                $icon = 'fas fa-exchange-alt';
+                                                break;
+                                        }
+                                        ?>
+                                        <span class="badge <?php echo $badge_class; ?>">
+                                            <i class="<?php echo $icon; ?> me-1"></i><?php echo $display_text; ?>
+                                        </span>
                                     </td>
                                     <td class="text-end py-3">
                                         <div class="fw-bold"><?php echo formatTurkishNumber($transaction['amount'], 6); ?></div>
