@@ -211,22 +211,7 @@ $recent_deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <?php if (!empty($deposit['payment_method_name'])): ?>
-                                            <div>
-                                                <strong><?php echo htmlspecialchars($deposit['payment_method_name']); ?></strong>
-                                                <?php if ($deposit['payment_method_type']): ?>
-                                                    <br><span class="badge bg-<?php 
-                                                    echo $deposit['payment_method_type'] == 'bank' ? 'primary' : 
-                                                        ($deposit['payment_method_type'] == 'digital' ? 'warning' : 'success'); 
-                                                    ?> text-uppercase"><?php echo $deposit['payment_method_type']; ?></span>
-                                                <?php endif; ?>
-                                                <?php if ($deposit['payment_method_code']): ?>
-                                                    <small class="text-muted d-block"><?php echo $deposit['payment_method_code']; ?></small>
-                                                <?php endif; ?>
-                                            </div>
-                                        <?php else: ?>
-                                            <span class="badge bg-secondary"><?php echo strtoupper($deposit['method'] ?? 'BİLİNMEYEN'); ?></span>
-                                        <?php endif; ?>
+                                        <span class="badge bg-secondary"><?php echo strtoupper($deposit['method'] ?? 'BİLİNMEYEN'); ?></span>
                                     </td>
                                     <td>
                                         <?php echo $deposit['reference'] ? htmlspecialchars($deposit['reference']) : '-'; ?>
@@ -314,7 +299,15 @@ $recent_deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <span class="badge bg-danger">Reddedildi</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?php echo date('d.m.Y H:i', strtotime($deposit['processed_at'])); ?></td>
+                                    <td>
+                                        <?php 
+                                        if (!empty($deposit['processed_at'])) {
+                                            echo date('d.m.Y H:i', strtotime($deposit['processed_at'])); 
+                                        } else {
+                                            echo date('d.m.Y H:i', strtotime($deposit['created_at'])); 
+                                        }
+                                        ?>
+                                    </td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
