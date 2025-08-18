@@ -734,52 +734,32 @@ include 'includes/header.php';
                                         <?php 
                                         $transaction_type = $transaction['type'];
                                         
-                                        // Convert transaction type to user-friendly Turkish display
+                                        // Convert all transaction types to simple ALIM/SATIM display
                                         $display_text = '';
                                         $badge_class = 'bg-info';
-                                        $icon = 'fas fa-tag';
                                         
                                         switch (strtoupper($transaction_type)) {
                                             case 'BUY':
+                                            case 'LEVERAGE_LONG':
+                                            case 'CLOSE_SHORT':
                                                 $display_text = 'ALIM';
                                                 $badge_class = 'bg-success';
-                                                $icon = 'fas fa-arrow-up';
                                                 break;
                                             case 'SELL':
+                                            case 'LEVERAGE_SHORT':
+                                            case 'CLOSE_LONG':
                                                 $display_text = 'SATIM';
                                                 $badge_class = 'bg-danger';
-                                                $icon = 'fas fa-arrow-down';
-                                                break;
-                                            case 'LEVERAGE_LONG':
-                                                $display_text = 'LONG';
-                                                $badge_class = 'bg-warning';
-                                                $icon = 'fas fa-bolt';
-                                                break;
-                                            case 'LEVERAGE_SHORT':
-                                                $display_text = 'SHORT';
-                                                $badge_class = 'bg-warning';
-                                                $icon = 'fas fa-bolt';
-                                                break;
-                                            case 'CLOSE_LONG':
-                                                $display_text = 'LONG KAPAT';
-                                                $badge_class = 'bg-secondary';
-                                                $icon = 'fas fa-times';
-                                                break;
-                                            case 'CLOSE_SHORT':
-                                                $display_text = 'SHORT KAPAT';
-                                                $badge_class = 'bg-secondary';
-                                                $icon = 'fas fa-times';
                                                 break;
                                             default:
-                                                // Show the transaction type as-is for any unrecognized types
-                                                $display_text = strtoupper($transaction_type);
+                                                // For any unrecognized types, show as ALIM
+                                                $display_text = 'ALIM';
                                                 $badge_class = 'bg-info';
-                                                $icon = 'fas fa-tag';
                                                 break;
                                         }
                                         ?>
                                         <span class="badge <?php echo $badge_class; ?>">
-                                            <i class="<?php echo $icon; ?> me-1"></i><?php echo $display_text; ?>
+                                            <?php echo $display_text; ?>
                                         </span>
                                     </td>
                                     <td class="text-end py-3">
