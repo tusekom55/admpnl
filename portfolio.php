@@ -734,32 +734,61 @@ include 'includes/header.php';
                                         <?php 
                                         $transaction_type = $transaction['type'];
                                         
-                                        // Convert all transaction types to simple ALIM/SATIM display
+                                        // More accurate transaction type display that distinguishes leverage operations
                                         $display_text = '';
                                         $badge_class = 'bg-info';
+                                        $icon = '';
                                         
                                         switch (strtoupper($transaction_type)) {
                                             case 'BUY':
-                                            case 'LEVERAGE_LONG':
-                                            case 'CLOSE_SHORT':
                                                 $display_text = 'ALIM';
                                                 $badge_class = 'bg-success';
+                                                $icon = 'fas fa-arrow-up';
                                                 break;
                                             case 'SELL':
-                                            case 'LEVERAGE_SHORT':
-                                            case 'CLOSE_LONG':
                                                 $display_text = 'SATIM';
                                                 $badge_class = 'bg-danger';
+                                                $icon = 'fas fa-arrow-down';
+                                                break;
+                                            case 'LEVERAGE_LONG':
+                                                $display_text = 'LONG AÇMA';
+                                                $badge_class = 'bg-warning';
+                                                $icon = 'fas fa-bolt';
+                                                break;
+                                            case 'LEVERAGE_SHORT':
+                                                $display_text = 'SHORT AÇMA';
+                                                $badge_class = 'bg-warning';
+                                                $icon = 'fas fa-bolt';
+                                                break;
+                                            case 'CLOSE_LONG':
+                                                $display_text = 'LONG KAPAMA';
+                                                $badge_class = 'bg-secondary';
+                                                $icon = 'fas fa-times';
+                                                break;
+                                            case 'CLOSE_SHORT':
+                                                $display_text = 'SHORT KAPAMA';
+                                                $badge_class = 'bg-secondary';
+                                                $icon = 'fas fa-times';
                                                 break;
                                             default:
-                                                // For any unrecognized types, show as ALIM
-                                                $display_text = 'ALIM';
-                                                $badge_class = 'bg-info';
+                                                // For any unrecognized types, check if it contains leverage-related words
+                                                $transaction_type_lower = strtolower($transaction_type);
+                                                if (strpos($transaction_type_lower, 'leverage') !== false || 
+                                                    strpos($transaction_type_lower, 'long') !== false || 
+                                                    strpos($transaction_type_lower, 'short') !== false) {
+                                                    $display_text = 'KALDIRAÇ';
+                                                    $badge_class = 'bg-warning';
+                                                    $icon = 'fas fa-bolt';
+                                                } else {
+                                                    $display_text = 'BİLİNMEYEN';
+                                                    $badge_class = 'bg-secondary';
+                                                    $icon = 'fas fa-question';
+                                                }
                                                 break;
                                         }
                                         ?>
-                                        <span class="badge <?php echo $badge_class; ?>">
-                                            <?php echo $display_text; ?>
+                                        <span class="badge <?php echo $badge_class; ?>" style="font-size: 0.75rem;">
+                                            <i class="<?php echo $icon; ?> me-1"></i><?php echo $display_text; ?>
                                         </span>
                                     </td>
                                     <td class="text-end py-3">
