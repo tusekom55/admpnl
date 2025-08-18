@@ -574,11 +574,31 @@ include 'includes/header.php';
                                             <td>
                                                 <?php 
                                 // Show amount in appropriate currency based on trading parameter and deposit type
-                                if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd' && $trading_currency == 2) {
-                                    // TL-to-USD deposit - amount field already contains USD value
-                                    echo formatNumber($deposit['amount']) . ' USD';
-                                    if (isset($deposit['tl_amount']) && $deposit['tl_amount'] > 0) {
-                                        echo '<br><small class="text-muted">(' . formatNumber($deposit['tl_amount']) . ' TL)</small>';
+                                $is_usd_deposit = false;
+                                $display_usd_amount = $deposit['amount'];
+                                $display_tl_amount = 0;
+                                
+                                if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd') {
+                                    $is_usd_deposit = true;
+                                    $display_tl_amount = $deposit['tl_amount'] ?? 0;
+                                } elseif (strpos($deposit['reference'], '→ USD:') !== false || strpos($deposit['reference'], 'USD:') !== false) {
+                                    // Fallback: Reference field'dan bilgileri parse et
+                                    $is_usd_deposit = true;
+                                    if (preg_match('/TL:\s*([\d.,]+)/', $deposit['reference'], $matches)) {
+                                        $display_tl_amount = (float)str_replace(',', '.', $matches[1]);
+                                    }
+                                    if (preg_match('/→\s*USD:\s*([\d.,]+)/', $deposit['reference'], $matches)) {
+                                        $display_usd_amount = (float)str_replace(',', '.', $matches[1]);
+                                    } elseif (preg_match('/USD:\s*([\d.,]+)/', $deposit['reference'], $matches)) {
+                                        $display_usd_amount = (float)str_replace(',', '.', $matches[1]);
+                                    }
+                                }
+                                
+                                if ($is_usd_deposit && $trading_currency == 2) {
+                                    // TL-to-USD deposit - show USD amount
+                                    echo formatNumber($display_usd_amount) . ' USD';
+                                    if ($display_tl_amount > 0) {
+                                        echo '<br><small class="text-muted">(' . formatNumber($display_tl_amount) . ' TL)</small>';
                                     }
                                 } elseif ($trading_currency == 2) {
                                     // USD Mode - convert TL to USD for display (legacy deposits)
