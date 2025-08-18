@@ -91,20 +91,24 @@ if ($_POST) {
     }
 }
 
-// Bekleyen depositleri getir
-$query = "SELECT d.*, u.username, u.email 
+// Bekleyen depositleri getir (payment method ile birlikte)
+$query = "SELECT d.*, u.username, u.email, 
+                 pm.name as payment_method_name, pm.type as payment_method_type, pm.code as payment_method_code
           FROM deposits d 
           LEFT JOIN users u ON d.user_id = u.id 
+          LEFT JOIN payment_methods pm ON d.payment_method_id = pm.id
           WHERE d.status = 'pending' 
           ORDER BY d.created_at DESC";
 $stmt = $db->prepare($query);
 $stmt->execute();
 $pending_deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Son işlemleri getir
-$query = "SELECT d.*, u.username, u.email 
+// Son işlemleri getir (payment method ile birlikte)
+$query = "SELECT d.*, u.username, u.email, 
+                 pm.name as payment_method_name, pm.type as payment_method_type, pm.code as payment_method_code
           FROM deposits d 
           LEFT JOIN users u ON d.user_id = u.id 
+          LEFT JOIN payment_methods pm ON d.payment_method_id = pm.id
           WHERE d.status IN ('approved', 'rejected') 
           ORDER BY d.processed_at DESC 
           LIMIT 20";
@@ -218,7 +222,22 @@ $recent_deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <span class="badge bg-info"><?php echo strtoupper($deposit['method']); ?></span>
+                                        <?php if (!empty($deposit['payment_method_name'])): ?>
+                                            <div>
+                                                <strong><?php echo htmlspecialchars($deposit['payment_method_name']); ?></strong>
+                                                <?php if ($deposit['payment_method_type']): ?>
+                                                    <br><span class="badge bg-<?php 
+                                                    echo $deposit['payment_method_type'] == 'bank' ? 'primary' : 
+                                                        ($deposit['payment_method_type'] == 'digital' ? 'warning' : 'success'); 
+                                                    ?> text-uppercase"><?php echo $deposit['payment_method_type']; ?></span>
+                                                <?php endif; ?>
+                                                <?php if ($deposit['payment_method_code']): ?>
+                                                    <small class="text-muted d-block"><?php echo $deposit['payment_method_code']; ?></small>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary"><?php echo strtoupper($deposit['method'] ?? 'BİLİNMEYEN'); ?></span>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <?php echo $deposit['reference'] ? htmlspecialchars($deposit['reference']) : '-'; ?>

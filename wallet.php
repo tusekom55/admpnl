@@ -356,15 +356,27 @@ include 'includes/header.php';
                                 <!-- Banka Seçimi -->
                                 <div id="bankDepositDetails" style="display: none;">
                                     <div class="mb-3">
-                                        <label class="form-label">Banka Seçiniz</label>
-                                        <div class="row">
+                                        <label class="form-label">
+                                            <i class="fas fa-university me-2 text-primary"></i>
+                                            Banka Seçiniz
+                                        </label>
+                                        <div class="row g-2">
                                             <?php foreach ($banks as $bank): ?>
-                                            <div class="col-md-6 mb-2">
-                                                <div class="bank-option p-3 border rounded" onclick="selectBank('<?php echo $bank['code']; ?>', '<?php echo $bank['iban']; ?>', '<?php echo $bank['account_name']; ?>')">
-                                                    <div class="text-center">
-                                                        <div class="h5 mb-1"><?php echo $bank['icon']; ?></div>
-                                                        <div class="fw-bold"><?php echo $bank['name']; ?></div>
-                                                        <small class="text-muted"><?php echo substr($bank['iban'], 0, 8); ?>...</small>
+                                            <div class="col-md-6 col-12">
+                                                <div class="bank-card p-3 border-0 rounded-3 shadow-sm" onclick="selectBank('<?php echo $bank['code']; ?>', '<?php echo $bank['iban']; ?>', '<?php echo $bank['account_name']; ?>')">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="bank-icon me-3">
+                                                            <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                                <span style="font-size: 1.5rem;"><?php echo $bank['icon']; ?></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="fw-bold text-dark mb-1"><?php echo $bank['name']; ?></div>
+                                                            <small class="text-muted">Güvenli Havale</small>
+                                                        </div>
+                                                        <div class="check-icon" style="opacity: 0;">
+                                                            <i class="fas fa-check-circle text-success fs-5"></i>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -373,11 +385,36 @@ include 'includes/header.php';
                                         <input type="hidden" name="selected_bank" id="selectedBank">
                                     </div>
                                     
-                                    <div class="alert alert-info" id="bankInfo" style="display: none;">
-                                        <h6>Havale Bilgileri</h6>
-                                        <strong>IBAN:</strong> <span id="displayIban"></span><br>
-                                        <strong>Hesap Adı:</strong> <span id="displayAccountName"></span><br>
-                                        <small class="text-muted">Havale açıklama kısmına kullanıcı adınızı yazınız.</small>
+                                    <div class="alert alert-info border-0 shadow-sm" id="bankInfo" style="display: none;">
+                                        <div class="d-flex align-items-start">
+                                            <i class="fas fa-info-circle text-info me-3 mt-1"></i>
+                                            <div class="flex-grow-1">
+                                                <h6 class="alert-heading mb-3">
+                                                    <i class="fas fa-university me-2"></i>
+                                                    Havale Bilgileri
+                                                </h6>
+                                                <div class="row">
+                                                    <div class="col-12 mb-2">
+                                                        <div class="d-flex justify-content-between align-items-center p-2 bg-white rounded border">
+                                                            <span class="text-muted">IBAN:</span>
+                                                            <span class="fw-bold" id="displayIban"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mb-3">
+                                                        <div class="d-flex justify-content-between align-items-center p-2 bg-white rounded border">
+                                                            <span class="text-muted">Hesap Adı:</span>
+                                                            <span class="fw-bold" id="displayAccountName"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="bg-warning bg-opacity-10 border border-warning rounded p-2">
+                                                    <small class="text-warning">
+                                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                                        <strong>Önemli:</strong> Havale açıklama kısmına kullanıcı adınızı yazınız.
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -779,6 +816,56 @@ include 'includes/header.php';
 
 <!-- Modern Wallet Styles -->
 <style>
+/* Modern Bank Card Design */
+.bank-card {
+    border: 2px solid #e9ecef !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.bank-card:hover {
+    border-color: #007bff !important;
+    box-shadow: 0 4px 20px rgba(0, 123, 255, 0.15) !important;
+    transform: translateY(-2px);
+}
+
+.bank-card.active {
+    border-color: #007bff !important;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white !important;
+    box-shadow: 0 6px 25px rgba(0, 123, 255, 0.3) !important;
+}
+
+.bank-card.active .text-dark {
+    color: white !important;
+}
+
+.bank-card.active .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.bank-card.active .check-icon {
+    opacity: 1 !important;
+}
+
+/* Bank Icon Styling */
+.bank-icon .rounded-circle {
+    transition: all 0.3s ease;
+}
+
+.bank-card.active .bank-icon .rounded-circle {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Smooth animations */
+.check-icon {
+    transition: opacity 0.3s ease;
+}
+
+/* Legacy styles for compatibility */
 .withdraw-method-card, .bank-option, .crypto-option {
     border: 2px solid #e9ecef;
     border-radius: 8px;
@@ -841,6 +928,12 @@ include 'includes/header.php';
     gap: 0.5rem;
 }
 
+/* Enhanced alert styling */
+.alert.border-0.shadow-sm {
+    border-left: 4px solid #0dcaf0 !important;
+    background: linear-gradient(135deg, #e7f7ff 0%, #f0f9ff 100%);
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .withdraw-method-card {
@@ -853,6 +946,10 @@ include 'includes/header.php';
     
     .bank-logo {
         height: 30px;
+    }
+    
+    .bank-card {
+        margin-bottom: 0.5rem;
     }
 }
 </style>
@@ -1021,21 +1118,35 @@ function showDepositDetails() {
 
 // Bank selection functions
 function selectBank(code, iban, accountName) {
-    // Remove active class from all bank options
+    // Remove active class from all bank cards
+    document.querySelectorAll('.bank-card').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // Also remove from legacy bank options if they exist
     document.querySelectorAll('.bank-option').forEach(el => {
         el.classList.remove('active');
     });
     
-    // Add active class to selected option
-    event.target.closest('.bank-option').classList.add('active');
+    // Add active class to selected card
+    event.target.closest('.bank-card').classList.add('active');
     
     // Set hidden field
     document.getElementById('selectedBank').value = code;
     
-    // Show bank info
+    // Show bank info with smooth animation
+    const bankInfo = document.getElementById('bankInfo');
     document.getElementById('displayIban').textContent = iban;
     document.getElementById('displayAccountName').textContent = accountName;
-    document.getElementById('bankInfo').style.display = 'block';
+    
+    if (bankInfo) {
+        bankInfo.style.display = 'block';
+        // Add fade-in animation
+        bankInfo.style.opacity = '0';
+        setTimeout(() => {
+            bankInfo.style.opacity = '1';
+        }, 10);
+    }
 }
 
 // Digital payment selection
