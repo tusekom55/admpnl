@@ -210,7 +210,7 @@ include 'includes/header.php';
                         <!-- Primary Currency (Based on Trading Parameter) -->
                         <div class="col-md-6 col-12 mb-3">
                             <div class="text-center p-4 bg-success bg-opacity-10 rounded border border-success">
-                                <i class="fas fa-<?php echo $trading_currency == 1 ? 'lira-sign' : 'dollar-sign'; ?> fa-3x text-success mb-3"></i>
+                                <i class="fas fa-<?php echo $trading_currency == 1 ? 'turkish-lira-sign' : 'dollar-sign'; ?> fa-3x text-success mb-3"></i>
                                 <div class="h3 mb-1 text-success"><?php echo formatNumber($primary_balance); ?></div>
                                 <div class="h6 text-success">
                                     <?php echo $trading_currency == 1 ? 'Türk Lirası' : 'US Dollar'; ?>
@@ -222,7 +222,7 @@ include 'includes/header.php';
                         <!-- Secondary Currency -->
                         <div class="col-md-6 col-12 mb-3">
                             <div class="text-center p-4 bg-light rounded border">
-                                <i class="fas fa-<?php echo $trading_currency == 1 ? 'dollar-sign' : 'lira-sign'; ?> fa-2x text-muted mb-3"></i>
+                                <i class="fas fa-<?php echo $trading_currency == 1 ? 'dollar-sign' : 'turkish-lira-sign'; ?> fa-2x text-muted mb-3"></i>
                                 <div class="h4 mb-1"><?php echo formatNumber($secondary_balance); ?></div>
                                 <div class="h6 text-muted">
                                     <?php echo $trading_currency == 1 ? 'US Dollar' : 'Türk Lirası'; ?>
@@ -290,7 +290,7 @@ include 'includes/header.php';
                                 <!-- TL Input for USD Account -->
                                 <div class="mb-3">
                                     <label class="form-label">
-                                        <i class="fas fa-lira-sign me-1 text-success"></i>
+                                        <i class="fas fa-turkish-lira-sign me-1 text-success"></i>
                                         Yatırılacak TL Tutarı
                                     </label>
                                     <div class="input-group">
@@ -329,7 +329,7 @@ include 'includes/header.php';
                                 <!-- Normal TL Deposit -->
                                 <div class="mb-3">
                                     <label class="form-label">
-                                        <i class="fas fa-lira-sign me-1 text-success"></i>
+                                        <i class="fas fa-turkish-lira-sign me-1 text-success"></i>
                                         Yatırılacak TL Tutarı
                                     </label>
                                     <div class="input-group">
