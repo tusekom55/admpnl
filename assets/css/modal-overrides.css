@@ -1,16 +1,46 @@
-/* ULTRA AGGRESSIVE MODAL OVERRIDES - Bootstrap 5.3.0 Bypass */
-/* Maximum specificity to override Bootstrap completely */
+/* MODAL DEBUG - RED BORDER TO CONFIRM CSS IS LOADING */
+#tradeModal {
+    border: 3px solid red !important;
+}
 
-/* FORCE MODAL SIZING - AL/SAT Modal */
-html body div.modal#tradeModal .modal-dialog,
-html body .modal#tradeModal .modal-dialog,
-html body #tradeModal.modal .modal-dialog,
-div#tradeModal.modal .modal-dialog.modal-responsive,
-.modal#tradeModal .modal-dialog.modal-responsive,
-#tradeModal .modal-dialog {
-    max-width: 420px !important;
-    width: 420px !important;
-    margin: 1rem auto !important;
+#leverageModal {
+    border: 3px solid blue !important;
+}
+
+/* EMERGENCY NUCLEAR OPTION - FORCE ALL MODALS */
+.modal-dialog,
+div.modal-dialog,
+.modal .modal-dialog,
+#tradeModal .modal-dialog,
+#leverageModal .modal-dialog,
+[id*="Modal"] .modal-dialog {
+    max-width: 300px !important;
+    width: 300px !important;
+    margin: 0.5rem auto !important;
+}
+
+.modal-content,
+div.modal-content,
+.modal .modal-content,
+#tradeModal .modal-content,
+#leverageModal .modal-content,
+[id*="Modal"] .modal-content {
+    max-height: 70vh !important;
+    overflow: hidden !important;
+}
+
+/* MOBILE NUCLEAR OPTION */
+@media screen and (max-width: 768px) {
+    .modal-dialog,
+    div.modal-dialog,
+    .modal .modal-dialog,
+    #tradeModal .modal-dialog,
+    #leverageModal .modal-dialog,
+    [id*="Modal"] .modal-dialog {
+        max-width: 250px !important;
+        width: 250px !important;
+        margin: 0.25rem auto !important;
+    }
 }
 
 /* FORCE MOBILE MODAL SIZING - Ultra aggressive */
