@@ -452,21 +452,326 @@ if (!in_array($current_page, $public_pages)) {
             color: var(--primary-color);
             background-color: var(--hover-bg);
         }
+        
+        /* MOBILE MENU STYLES */
+        .offcanvas {
+            width: 320px !important;
+            border: none !important;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .offcanvas-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+            color: white;
+            border-bottom: none;
+            padding: 1.5rem;
+        }
+        
+        .offcanvas-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .offcanvas-body {
+            padding: 0;
+            background: #f8f9fa;
+        }
+        
+        /* User Section */
+        .mobile-user-section {
+            padding: 1.5rem;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .mobile-user-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .mobile-user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+        
+        .mobile-user-info {
+            flex: 1;
+        }
+        
+        .mobile-username {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .mobile-balance {
+            font-size: 0.9rem;
+        }
+        
+        /* Navigation Sections */
+        .mobile-nav-section {
+            padding: 1.5rem;
+            background: white;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .mobile-nav-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+        
+        /* Grid Navigation */
+        .mobile-nav-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem 0.75rem;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 16px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            min-height: 90px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mobile-nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+        
+        .mobile-nav-item.active::before {
+            opacity: 1;
+        }
+        
+        .mobile-nav-item.active {
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+        }
+        
+        .mobile-nav-item:hover:not(.active) {
+            background: #e9ecef;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .mobile-nav-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .mobile-nav-item span {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Quick Actions */
+        .mobile-quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        
+        .mobile-quick-btn {
+            padding: 0.75rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mobile-quick-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+        
+        /* List Navigation */
+        .mobile-nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .mobile-nav-link:hover {
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            transform: translateX(5px);
+        }
+        
+        /* Language Switcher */
+        .mobile-language-switcher {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        
+        .mobile-lang-btn {
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+        
+        .mobile-lang-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .mobile-lang-btn:hover:not(.active) {
+            background: #e9ecef;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        /* Logout Button */
+        .mobile-logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 1rem;
+            background: #dc3545;
+            color: white;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-logout-btn:hover {
+            background: #c82333;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        /* Auth Section */
+        .mobile-auth-section {
+            padding: 2rem 1.5rem;
+            background: white;
+            text-align: center;
+        }
+        
+        /* Ensure mobile menu doesn't interfere with page categories */
+        @media (max-width: 768px) {
+            .mobile-category-tabs {
+                z-index: 1000 !important;
+                position: relative !important;
+            }
+            
+            .offcanvas {
+                z-index: 9998 !important;
+            }
+            
+            .offcanvas-backdrop {
+                z-index: 9997 !important;
+            }
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 375px) {
+            .offcanvas {
+                width: 300px !important;
+            }
+            
+            .mobile-nav-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .mobile-quick-actions,
+            .mobile-language-switcher {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
+    <!-- Unified Navigation System -->
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
             <a class="navbar-brand" href="index.php">
                 <i class="fas fa-chart-line me-2"></i><?php echo SITE_NAME; ?>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <!-- Mobile Menu Toggle -->
+            <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Desktop Navigation -->
+            <div class="collapse navbar-collapse d-none d-lg-flex" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'markets.php' ? 'active' : ''; ?>" href="markets.php">
@@ -483,11 +788,6 @@ if (!in_array($current_page, $public_pages)) {
                             <i class="fas fa-wallet me-1"></i><?php echo getCurrentLang() == 'tr' ? 'Cüzdan' : 'Wallet'; ?>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>" href="profile.php">
-                            <i class="fas fa-user me-1"></i><?php echo getCurrentLang() == 'tr' ? 'Profil' : 'Profile'; ?>
-                        </a>
-                    </li>
                 </ul>
                 
                 <div class="d-flex align-items-center">
@@ -499,7 +799,7 @@ if (!in_array($current_page, $public_pages)) {
                     
                     <?php if (isLoggedIn()): ?>
                         <!-- User Balance (Parametric) -->
-                        <div class="me-3">
+                        <div class="me-3 d-none d-md-block">
                             <small class="text-muted"><?php echo t('balance'); ?>:</small>
                             <strong class="text-success"><?php echo getFormattedHeaderBalance($_SESSION['user_id']); ?></strong>
                         </div>
@@ -507,7 +807,7 @@ if (!in_array($current_page, $public_pages)) {
                         <!-- User Menu -->
                         <div class="dropdown">
                             <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-1"></i><?php echo $_SESSION['username']; ?>
+                                <i class="fas fa-user me-1"></i><span class="d-none d-md-inline"><?php echo $_SESSION['username']; ?></span>
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i><?php echo t('profile'); ?></a></li>
@@ -524,6 +824,130 @@ if (!in_array($current_page, $public_pages)) {
             </div>
         </div>
     </nav>
+    
+    <!-- Mobile Offcanvas Menu -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="mobileMenuLabel">
+                <i class="fas fa-chart-line me-2 text-primary"></i><?php echo SITE_NAME; ?>
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <?php if (isLoggedIn()): ?>
+                <!-- User Info Section -->
+                <div class="mobile-user-section">
+                    <div class="mobile-user-card">
+                        <div class="mobile-user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="mobile-user-info">
+                            <div class="mobile-username"><?php echo $_SESSION['username']; ?></div>
+                            <div class="mobile-balance">
+                                <small class="text-muted"><?php echo t('balance'); ?>:</small>
+                                <strong class="text-success"><?php echo getFormattedHeaderBalance($_SESSION['user_id']); ?></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main Navigation -->
+                <div class="mobile-nav-section">
+                    <h6 class="mobile-nav-title"><?php echo getCurrentLang() == 'tr' ? 'Ana Menü' : 'Main Menu'; ?></h6>
+                    <div class="mobile-nav-grid">
+                        <a href="markets.php" class="mobile-nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'markets.php' ? 'active' : ''; ?>" data-bs-dismiss="offcanvas">
+                            <div class="mobile-nav-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <span><?php echo getCurrentLang() == 'tr' ? 'Piyasalar' : 'Markets'; ?></span>
+                        </a>
+                        <a href="portfolio.php" class="mobile-nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'portfolio.php' ? 'active' : ''; ?>" data-bs-dismiss="offcanvas">
+                            <div class="mobile-nav-icon">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <span><?php echo getCurrentLang() == 'tr' ? 'Portföy' : 'Portfolio'; ?></span>
+                        </a>
+                        <a href="wallet.php" class="mobile-nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'wallet.php' ? 'active' : ''; ?>" data-bs-dismiss="offcanvas">
+                            <div class="mobile-nav-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <span><?php echo getCurrentLang() == 'tr' ? 'Cüzdan' : 'Wallet'; ?></span>
+                        </a>
+                        <a href="profile.php" class="mobile-nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>" data-bs-dismiss="offcanvas">
+                            <div class="mobile-nav-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span><?php echo getCurrentLang() == 'tr' ? 'Profil' : 'Profile'; ?></span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="mobile-nav-section">
+                    <h6 class="mobile-nav-title"><?php echo getCurrentLang() == 'tr' ? 'Hızlı İşlemler' : 'Quick Actions'; ?></h6>
+                    <div class="mobile-quick-actions">
+                        <a href="markets.php" class="mobile-quick-btn btn-success" data-bs-dismiss="offcanvas">
+                            <i class="fas fa-shopping-cart me-2"></i><?php echo getCurrentLang() == 'tr' ? 'Al/Sat' : 'Trade'; ?>
+                        </a>
+                        <a href="wallet.php" class="mobile-quick-btn btn-primary" data-bs-dismiss="offcanvas">
+                            <i class="fas fa-plus me-2"></i><?php echo getCurrentLang() == 'tr' ? 'Para Yatır' : 'Deposit'; ?>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Logout -->
+                <div class="mobile-nav-section">
+                    <a href="logout.php" class="mobile-logout-btn">
+                        <i class="fas fa-sign-out-alt me-2"></i><?php echo getCurrentLang() == 'tr' ? 'Çıkış Yap' : 'Logout'; ?>
+                    </a>
+                </div>
+            <?php else: ?>
+                <!-- Not Logged In State -->
+                <div class="mobile-auth-section">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-circle fa-4x text-muted mb-3"></i>
+                        <h6><?php echo getCurrentLang() == 'tr' ? 'Hesabınıza giriş yapın' : 'Sign in to your account'; ?></h6>
+                        <p class="text-muted small"><?php echo getCurrentLang() == 'tr' ? 'Trading ve portföy yönetimi için' : 'For trading and portfolio management'; ?></p>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="login.php" class="btn btn-primary" data-bs-dismiss="offcanvas">
+                            <i class="fas fa-sign-in-alt me-2"></i><?php echo getCurrentLang() == 'tr' ? 'Giriş Yap' : 'Sign In'; ?>
+                        </a>
+                        <a href="register.php" class="btn btn-outline-primary" data-bs-dismiss="offcanvas">
+                            <i class="fas fa-user-plus me-2"></i><?php echo getCurrentLang() == 'tr' ? 'Kayıt Ol' : 'Sign Up'; ?>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Public Navigation -->
+                <div class="mobile-nav-section mt-4">
+                    <h6 class="mobile-nav-title"><?php echo getCurrentLang() == 'tr' ? 'Keşfet' : 'Explore'; ?></h6>
+                    <div class="mobile-nav-list">
+                        <a href="markets.php" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+                            <i class="fas fa-chart-line me-3"></i><?php echo getCurrentLang() == 'tr' ? 'Piyasalar' : 'Markets'; ?>
+                        </a>
+                        <a href="index.php" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+                            <i class="fas fa-home me-3"></i><?php echo getCurrentLang() == 'tr' ? 'Ana Sayfa' : 'Home'; ?>
+                        </a>
+                    </div>
+                </div>
+            <?php endif; ?>
+            
+            <!-- Language Switcher -->
+            <div class="mobile-nav-section mt-auto">
+                <h6 class="mobile-nav-title"><?php echo getCurrentLang() == 'tr' ? 'Dil' : 'Language'; ?></h6>
+                <div class="mobile-language-switcher">
+                    <a href="?lang=tr" class="mobile-lang-btn <?php echo getCurrentLang() == 'tr' ? 'active' : ''; ?>">
+                        🇹🇷 Türkçe
+                    </a>
+                    <a href="?lang=en" class="mobile-lang-btn <?php echo getCurrentLang() == 'en' ? 'active' : ''; ?>">
+                        🇺🇸 English
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <!-- Main Content -->
     <div class="main-content">

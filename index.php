@@ -7,193 +7,13 @@ $page_title = 'GlobalBorsa - Türkiye\'nin En Güvenilir Yatırım Platformu';
 $markets = getMarketData('us_stocks', 6);
 ?>
 
-<!DOCTYPE html>
-<html lang="<?php echo getCurrentLang(); ?>">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $page_title; ?></title>
-    <meta name="description" content="Türkiye'nin en güvenilir yatırım platformu. 7/24 Türkçe destek, güvenli altyapı, düşük komisyonlar.">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-color: #007bff;
-            --secondary-color: #0d1b4c;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --info-color: #17a2b8;
-            --dark-color: #343a40;
-            --light-color: #f8f9fa;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<?php include 'includes/header.php'; ?>
+<style>
+        /* Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #fff;
-        }
-        
-        /* Mobile-First Header */
-        .main-header {
-            background: #fff;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 9999;
-            padding: 0.75rem 0;
-        }
-        
-        .header-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary-color);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .main-nav {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        
-        .nav-link:hover, .nav-link.active {
-            background: var(--primary-color);
-            color: #fff;
-            text-decoration: none;
-        }
-        
-        .auth-buttons {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .btn-primary {
-            background: var(--primary-color);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-outline-primary {
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            background: transparent;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-outline-primary:hover {
-            background: var(--primary-color);
-            color: #fff;
-        }
-        
-        /* Mobile Header Responsive */
-        @media (max-width: 768px) {
-            .header-container {
-                padding: 0 0.75rem;
-            }
-            
-            .logo {
-                font-size: 1.3rem;
-            }
-            
-            .main-nav {
-                gap: 0.25rem;
-            }
-            
-            .nav-link {
-                padding: 0.4rem 0.6rem;
-                font-size: 0.8rem;
-            }
-            
-            .nav-link i {
-                font-size: 0.8rem;
-            }
-            
-            .auth-buttons {
-                gap: 0.25rem;
-            }
-            
-            .btn-primary, .btn-outline-primary {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.8rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .header-container {
-                padding: 0 0.5rem;
-            }
-            
-            .logo {
-                font-size: 1.2rem;
-            }
-            
-            .nav-link span {
-                display: none;
-            }
-            
-            .nav-link {
-                padding: 0.4rem;
-                min-width: 32px;
-                justify-content: center;
-            }
-            
-            .btn-primary, .btn-outline-primary {
-                padding: 0.4rem 0.6rem;
-                font-size: 0.75rem;
-            }
         }
         
         /* Hero Section */
@@ -1140,54 +960,6 @@ $markets = getMarketData('us_stocks', 6);
             }
         }
     </style>
-</head>
-<body>
-    <!-- Header -->
-    <header class="main-header">
-        <div class="header-container">
-            <a href="index.php" class="logo">
-                <i class="fas fa-chart-line"></i>
-                <?php echo SITE_NAME; ?>
-            </a>
-            
-            <nav class="main-nav">
-                <a href="markets.php" class="nav-link">
-                    <i class="fas fa-chart-line"></i>
-                    <span><?php echo getCurrentLang() == 'tr' ? 'Piyasalar' : 'Markets'; ?></span>
-                </a>
-                <a href="portfolio.php" class="nav-link">
-                    <i class="fas fa-chart-pie"></i>
-                    <span><?php echo getCurrentLang() == 'tr' ? 'Portföy' : 'Portfolio'; ?></span>
-                </a>
-                <a href="wallet.php" class="nav-link">
-                    <i class="fas fa-wallet"></i>
-                    <span><?php echo getCurrentLang() == 'tr' ? 'Cüzdan' : 'Wallet'; ?></span>
-                </a>
-                <a href="profile.php" class="nav-link">
-                    <i class="fas fa-user"></i>
-                    <span><?php echo getCurrentLang() == 'tr' ? 'Profil' : 'Profile'; ?></span>
-                </a>
-            </nav>
-            
-            <div class="auth-buttons">
-                <?php if (isLoggedIn()): ?>
-                    <a href="profile.php" class="btn-outline-primary">
-                        <i class="fas fa-user"></i> <?php echo $_SESSION['username']; ?>
-                    </a>
-                    <a href="logout.php" class="btn-primary">
-                        <i class="fas fa-sign-out-alt"></i> <?php echo getCurrentLang() == 'tr' ? 'Çıkış' : 'Logout'; ?>
-                    </a>
-                <?php else: ?>
-                    <a href="login.php" class="btn-outline-primary">
-                        <?php echo getCurrentLang() == 'tr' ? 'Giriş' : 'Login'; ?>
-                    </a>
-                    <a href="register.php" class="btn-primary">
-                        <?php echo getCurrentLang() == 'tr' ? 'Kayıt' : 'Register'; ?>
-                    </a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </header>
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -1541,100 +1313,44 @@ $markets = getMarketData('us_stocks', 6);
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4><?php echo getCurrentLang() == 'tr' ? 'Platform' : 'Platform'; ?></h4>
-                    <ul class="footer-links">
-                        <li><a href="markets.php"><?php echo getCurrentLang() == 'tr' ? 'Piyasalar' : 'Markets'; ?></a></li>
-                        <li><a href="portfolio.php"><?php echo getCurrentLang() == 'tr' ? 'Portföy' : 'Portfolio'; ?></a></li>
-                        <li><a href="profile.php"><?php echo getCurrentLang() == 'tr' ? 'Profil' : 'Profile'; ?></a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h4><?php echo getCurrentLang() == 'tr' ? 'Destek' : 'Support'; ?></h4>
-                    <ul class="footer-links">
-                        <li><a href="#"><?php echo getCurrentLang() == 'tr' ? 'Yardım Merkezi' : 'Help Center'; ?></a></li>
-                        <li><a href="#"><?php echo getCurrentLang() == 'tr' ? 'Canlı Destek' : 'Live Support'; ?></a></li>
-                        <li><a href="#"><?php echo getCurrentLang() == 'tr' ? 'İletişim' : 'Contact'; ?></a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h4><?php echo getCurrentLang() == 'tr' ? 'Yasal' : 'Legal'; ?></h4>
-                    <ul class="footer-links">
-                        <li><a href="#"><?php echo getCurrentLang() == 'tr' ? 'Kullanım Şartları' : 'Terms of Service'; ?></a></li>
-                        <li><a href="#"><?php echo getCurrentLang() == 'tr' ? 'Gizlilik Politikası' : 'Privacy Policy'; ?></a></li>
-                        <li><a href="#"><?php echo getCurrentLang() == 'tr' ? 'Risk Uyarısı' : 'Risk Warning'; ?></a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h4><?php echo getCurrentLang() == 'tr' ? 'Takip Edin' : 'Follow Us'; ?></h4>
-                    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
-                        <a href="#" style="color: rgba(255,255,255,0.8); font-size: 1.5rem; transition: color 0.3s ease;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" style="color: rgba(255,255,255,0.8); font-size: 1.5rem; transition: color 0.3s ease;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">
-                            <i class="fab fa-telegram"></i>
-                        </a>
-                        <a href="#" style="color: rgba(255,255,255,0.8); font-size: 1.5rem; transition: color 0.3s ease;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <p>&copy; 2024 <?php echo SITE_NAME; ?>. <?php echo getCurrentLang() == 'tr' ? 'Tüm hakları saklıdır.' : 'All rights reserved.'; ?></p>
-            </div>
-        </div>
-    </footer>
+<?php include 'includes/footer.php'; ?>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-        
-        // Header scroll effect
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('.main-header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(255, 255, 255, 0.95)';
-                header.style.backdropFilter = 'blur(10px)';
-            } else {
-                header.style.background = '#fff';
-                header.style.backdropFilter = 'none';
+<script>
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
             }
         });
-        
-        // Ticker hover pause
-        const tickerTrack = document.querySelector('.ticker-track');
-        if (tickerTrack) {
-            tickerTrack.addEventListener('mouseenter', () => {
-                tickerTrack.style.animationPlayState = 'paused';
-            });
-            
-            tickerTrack.addEventListener('mouseleave', () => {
-                tickerTrack.style.animationPlayState = 'running';
-            });
+    });
+    
+    // Header scroll effect for index page
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 100) {
+            navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+            navbar.style.backdropFilter = 'blur(10px)';
+        } else {
+            navbar.style.background = '#fff';
+            navbar.style.backdropFilter = 'none';
         }
-    </script>
-</body>
-</html>
+    });
+    
+    // Ticker hover pause
+    const tickerTrack = document.querySelector('.ticker-track');
+    if (tickerTrack) {
+        tickerTrack.addEventListener('mouseenter', () => {
+            tickerTrack.style.animationPlayState = 'paused';
+        });
+        
+        tickerTrack.addEventListener('mouseleave', () => {
+            tickerTrack.style.animationPlayState = 'running';
+        });
+    }
+</script>
