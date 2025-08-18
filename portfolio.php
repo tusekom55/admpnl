@@ -735,14 +735,20 @@ include 'includes/header.php';
                                         $transaction_type = $transaction['type'];
                                         
                                         // DEBUG: Log transaction type to see what we're actually getting
-                                        error_log("PORTFOLIO DEBUG: Transaction type = '" . $transaction_type . "'");
+                                        error_log("PORTFOLIO DEBUG: Transaction type = '" . $transaction_type . "' (NULL: " . (is_null($transaction_type) ? "yes" : "no") . ")");
                                         
-                                        // More accurate transaction type display that distinguishes leverage operations
-                                        $display_text = '';
-                                        $badge_class = 'bg-info';
-                                        $icon = '';
-                                        
-                                        switch (strtoupper($transaction_type)) {
+                                        // Handle NULL/empty transaction types first
+                                        if (empty($transaction_type) || is_null($transaction_type)) {
+                                            $display_text = 'İŞLEM';
+                                            $badge_class = 'bg-info';
+                                            $icon = 'fas fa-exchange-alt';
+                                        } else {
+                                            // More accurate transaction type display that distinguishes leverage operations
+                                            $display_text = '';
+                                            $badge_class = 'bg-info';
+                                            $icon = '';
+                                            
+                                            switch (strtoupper($transaction_type)) {
                                             case 'BUY':
                                                 $display_text = 'ALIM';
                                                 $badge_class = 'bg-success';
