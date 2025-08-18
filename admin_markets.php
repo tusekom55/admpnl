@@ -310,11 +310,11 @@ $markets = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                         </div>
                         
-                        <!-- Değişim Yüzdesi - Gizli -->
-                        <div class="mb-3" style="display: none;">
-                            <label class="form-label">Değişim % (İsteğe Bağlı)</label>
-                            <input type="number" step="0.01" class="form-control" name="change_percent" id="edit_change_percent" value="0" placeholder="Örn: 2.5 veya -1.8">
-                            <small class="text-muted">Boş bırakılırsa 0 olarak ayarlanır.</small>
+                        <!-- Değişim Yüzdesi - Otomatik Hesaplanan -->
+                        <div class="mb-3">
+                            <label class="form-label">Değişim % (Otomatik Hesaplanır)</label>
+                            <input type="number" step="0.01" class="form-control" name="change_percent" id="edit_change_percent" value="0" placeholder="Otomatik hesaplanacak">
+                            <small class="text-muted">Fiyat değiştikçe otomatik hesaplanır. İsterseniz manuel değiştirebilirsiniz.</small>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -328,27 +328,53 @@ $markets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    let originalPrice = 0;
+    
     function editPrice(id, symbol, currentPrice, changePercent) {
         // Modal formunu ayarla
         document.getElementById('edit_market_id').value = id;
         document.getElementById('editPriceTitle').textContent = symbol + ' Fiyat Güncelle';
         
+        // Orijinal fiyatı sakla
+        originalPrice = parseFloat(currentPrice);
+        
         // Mevcut fiyatı bilgi alanına göster (readonly)
-        document.getElementById('current_price_display').value = parseFloat(currentPrice).toFixed(4);
+        document.getElementById('current_price_display').value = originalPrice.toFixed(4);
         
         // Yeni fiyat alanını temizle
         document.getElementById('new_price_input').value = '';
         
-        // Değişim yüzdesini her zaman 0 olarak ayarla (gizli alan)
-                                document.getElementById('edit_change_percent').value = null;
+        // Değişim yüzdesini sıfırla
+        document.getElementById('edit_change_percent').value = '0.00';
         
         // Modalı aç
         new bootstrap.Modal(document.getElementById('editPriceModal')).show();
         
-        // Yeni fiyat alanına odaklan
+        // Yeni fiyat alanına odaklan ve change event ekle
         setTimeout(() => {
-            document.getElementById('new_price_input').focus();
+            const newPriceInput = document.getElementById('new_price_input');
+            newPriceInput.focus();
+            
+            // Otomatik hesaplama için event listener ekle
+            newPriceInput.oninput = function() {
+                calculateChangePercent();
+            };
         }, 500);
+    }
+    
+    function calculateChangePercent() {
+        const newPriceInput = document.getElementById('new_price_input');
+        const changePercentInput = document.getElementById('edit_change_percent');
+        
+        const newPrice = parseFloat(newPriceInput.value);
+        
+        if (newPrice && originalPrice && originalPrice > 0) {
+            // Değişim yüzdesini hesapla: ((yeni_fiyat - eski_fiyat) / eski_fiyat) * 100
+            const changePercent = ((newPrice - originalPrice) / originalPrice) * 100;
+            changePercentInput.value = changePercent.toFixed(2);
+        } else {
+            changePercentInput.value = '0.00';
+        }
     }
     </script>
 </body>
