@@ -883,7 +883,7 @@ if (!in_array($current_page, $public_pages)) {
                                 
                                 $database = new Database();
                                 $db = $database->getConnection();
-                                $query = "SELECT is_admin FROM users WHERE user_id = ?";
+                                $query = "SELECT is_admin FROM users WHERE id = ?";
                                 $stmt = $db->prepare($query);
                                 $stmt->execute([$_SESSION['user_id']]);
                                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
