@@ -37,10 +37,18 @@ if ($_POST) {
                     $stmt = $db->prepare($query);
                     $stmt->execute([$deposit_id]);
                     
-                    // Kullanıcı bakiyesine ekle
-                    $query = "UPDATE users SET balance_tl = balance_tl + ? WHERE id = ?";
-                    $stmt = $db->prepare($query);
-                    $stmt->execute([$deposit['amount'], $deposit['user_id']]);
+                    // Deposit type'a göre uygun bakiyeye ekle
+                    if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd') {
+                        // TL-to-USD deposit - USD bakiyesine ekle
+                        $query = "UPDATE users SET balance_usd = balance_usd + ? WHERE id = ?";
+                        $stmt = $db->prepare($query);
+                        $stmt->execute([$deposit['amount'], $deposit['user_id']]);
+                    } else {
+                        // Normal TL deposit - TL bakiyesine ekle
+                        $query = "UPDATE users SET balance_tl = balance_tl + ? WHERE id = ?";
+                        $stmt = $db->prepare($query);
+                        $stmt->execute([$deposit['amount'], $deposit['user_id']]);
+                    }
                     
                     $db->commit();
                     $success = "Para yatırma onaylandı ve kullanıcı bakiyesi güncellendi!";
@@ -154,7 +162,17 @@ $recent_deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <small class="text-muted"><?php echo htmlspecialchars($deposit['email']); ?></small>
                                     </td>
                                     <td>
-                                        <strong class="text-success"><?php echo number_format($deposit['amount'], 2); ?> TL</strong>
+                                        <?php if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd'): ?>
+                                            <strong class="text-primary"><?php echo number_format($deposit['amount'], 4); ?> USD</strong>
+                                            <?php if (isset($deposit['tl_amount']) && $deposit['tl_amount'] > 0): ?>
+                                                <br><small class="text-muted">(<?php echo number_format($deposit['tl_amount'], 2); ?> TL ödendi)</small>
+                                            <?php endif; ?>
+                                            <?php if (isset($deposit['exchange_rate']) && $deposit['exchange_rate'] > 0): ?>
+                                                <br><small class="text-info">Kur: <?php echo number_format($deposit['exchange_rate'], 4); ?></small>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <strong class="text-success"><?php echo number_format($deposit['amount'], 2); ?> TL</strong>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <span class="badge bg-info"><?php echo strtoupper($deposit['method']); ?></span>
@@ -220,7 +238,16 @@ $recent_deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <tr>
                                     <td><?php echo $deposit['id']; ?></td>
                                     <td><?php echo htmlspecialchars($deposit['username']); ?></td>
-                                    <td><?php echo number_format($deposit['amount'], 2); ?> TL</td>
+                                    <td>
+                                        <?php if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd'): ?>
+                                            <?php echo number_format($deposit['amount'], 4); ?> USD
+                                            <?php if (isset($deposit['tl_amount']) && $deposit['tl_amount'] > 0): ?>
+                                                <br><small class="text-muted">(<?php echo number_format($deposit['tl_amount'], 2); ?> TL)</small>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <?php echo number_format($deposit['amount'], 2); ?> TL
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <?php if ($deposit['status'] === 'approved'): ?>
                                             <span class="badge bg-success">Onaylandı</span>
