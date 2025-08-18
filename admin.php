@@ -190,6 +190,20 @@ $pending_deposits = $stmt->fetch(PDO::FETCH_ASSOC)['pending_deposits'];
             <div class="col-md-6 col-lg-4">
                 <div class="card">
                     <div class="card-header">
+                        <h5><i class="fas fa-credit-card"></i> Ödeme Yöntemleri</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Ödeme yöntemlerini düzenle ve yönet</p>
+                        <a href="admin_payment_methods.php" class="btn btn-info">
+                            <i class="fas fa-arrow-right"></i> Ödeme Yöntemleri
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-header">
                         <h5><i class="fas fa-cogs"></i> Sistem Ayarları</h5>
                     </div>
                     <div class="card-body">
