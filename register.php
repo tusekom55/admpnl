@@ -48,7 +48,7 @@ if ($_POST) {
         } else {
             // Create new user
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $query = "INSERT INTO users (first_name, last_name, username, email, password, balance_tl) VALUES (?, ?, ?, ?, ?, 1000.00)";
+            $query = "INSERT INTO users (first_name, last_name, username, email, password) VALUES (?, ?, ?, ?, ?)";
             $stmt = $db->prepare($query);
             
             if ($stmt->execute([$first_name, $last_name, $username, $email, $hashed_password])) {
@@ -185,22 +185,6 @@ include 'includes/header.php';
                         </p>
                     </div>
                     
-                    <!-- Welcome Bonus Info -->
-                    <div class="mt-4 p-3 bg-success bg-opacity-10 border border-success rounded">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-gift text-success me-2"></i>
-                            <div>
-                                <h6 class="mb-1 text-success">
-                                    <?php echo getCurrentLang() == 'tr' ? 'Hoş Geldin Bonusu!' : 'Welcome Bonus!'; ?>
-                                </h6>
-                                <small class="text-muted">
-                                    <?php echo getCurrentLang() == 'tr' ? 
-                                        'Yeni üyelere 1.000 TL demo bakiye hediye!' : 
-                                        'New members get 1,000 TL demo balance!'; ?>
-                                </small>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
