@@ -21,6 +21,8 @@ if (!in_array($current_page, $public_pages)) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="assets/css/style.css" rel="stylesheet">
+    <!-- Modal Overrides CSS - MUST load after Bootstrap -->
+    <link href="assets/css/modal-overrides.css" rel="stylesheet">
     
     <style>
         :root {
