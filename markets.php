@@ -1335,6 +1335,9 @@ function openTradeModal(button) {
     document.getElementById('modalName').textContent = name;
     document.getElementById('modalPrice').textContent = formatPrice(price);
     
+    // Update modal logo with original logo from market data
+    updateModalLogo(symbol);
+    
     // Set hidden fields for forms
     document.getElementById('buySymbol').value = symbol;
     if (document.getElementById('buySymbolMobile')) {
@@ -1349,6 +1352,34 @@ function openTradeModal(button) {
     setTimeout(() => {
         initializeCharts(symbol, price);
     }, 300);
+}
+
+// Update modal logo with original logo from markets data
+function updateModalLogo(symbol) {
+    // Find the market row with matching symbol
+    const marketRow = document.querySelector(`.market-row[data-symbol="${symbol}"]`);
+    const mobileCard = document.querySelector(`.mobile-market-card[data-symbol="${symbol}"]`);
+    
+    let logoElement = null;
+    
+    // Try to get logo from desktop table first
+    if (marketRow) {
+        logoElement = marketRow.querySelector('img');
+    }
+    // Fallback to mobile card
+    else if (mobileCard) {
+        logoElement = mobileCard.querySelector('img, .mobile-market-logo');
+    }
+    
+    const modalLogoContainer = document.querySelector('#tradeModal .modal-header .bg-primary');
+    
+    if (logoElement && logoElement.tagName === 'IMG' && logoElement.src) {
+        // Replace with original logo
+        modalLogoContainer.innerHTML = `<img src="${logoElement.src}" alt="${symbol}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">`;
+    } else {
+        // Fallback to icon if no logo available
+        modalLogoContainer.innerHTML = '<i class="fas fa-chart-line text-white"></i>';
+    }
 }
 
 // Chart period change handlers
@@ -1445,7 +1476,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="d-none d-md-block">
                     <div class="row">
                         <!-- Trading Form Column -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <h6 class="mb-3"><i class="fas fa-shopping-cart me-2"></i>İşlem Formu</h6>
                             <?php if (isLoggedIn()): ?>
                             <form id="buyForm" method="POST" action="markets.php?group=<?php echo $category; ?>">
@@ -1500,7 +1531,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         
                         <!-- Chart Column -->
-                        <div class="col-md-6">
+                        <div class="col-md-8">
                             <h6 class="mb-3"><i class="fas fa-chart-line me-2"></i>Fiyat Grafiği</h6>
                             <div class="chart-container">
                                 <canvas id="desktopPriceChart" width="400" height="300"></canvas>
