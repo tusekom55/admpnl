@@ -12,14 +12,20 @@ $error = '';
 $success = '';
 
 if ($_POST) {
+    $first_name = sanitizeInput($_POST['first_name'] ?? '');
+    $last_name = sanitizeInput($_POST['last_name'] ?? '');
     $username = sanitizeInput($_POST['username'] ?? '');
     $email = sanitizeInput($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     
     // Validation
-    if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
+    if (empty($first_name) || empty($last_name) || empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
         $error = getCurrentLang() == 'tr' ? 'Tüm alanları doldurun' : 'Please fill all fields';
+    } elseif (strlen($first_name) < 2) {
+        $error = getCurrentLang() == 'tr' ? 'Ad en az 2 karakter olmalı' : 'First name must be at least 2 characters';
+    } elseif (strlen($last_name) < 2) {
+        $error = getCurrentLang() == 'tr' ? 'Soyad en az 2 karakter olmalı' : 'Last name must be at least 2 characters';
     } elseif (strlen($username) < 3) {
         $error = getCurrentLang() == 'tr' ? 'Kullanıcı adı en az 3 karakter olmalı' : 'Username must be at least 3 characters';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -42,10 +48,10 @@ if ($_POST) {
         } else {
             // Create new user
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $query = "INSERT INTO users (username, email, password, balance_tl) VALUES (?, ?, ?, 1000.00)";
+            $query = "INSERT INTO users (first_name, last_name, username, email, password, balance_tl) VALUES (?, ?, ?, ?, ?, 1000.00)";
             $stmt = $db->prepare($query);
             
-            if ($stmt->execute([$username, $email, $hashed_password])) {
+            if ($stmt->execute([$first_name, $last_name, $username, $email, $hashed_password])) {
                 $success = t('register_success');
                 
                 // Log the registration
@@ -53,7 +59,7 @@ if ($_POST) {
                 logActivity($user_id, 'register', 'User registered');
                 
                 // Clear form data
-                $username = $email = '';
+                $first_name = $last_name = $username = $email = '';
             } else {
                 $error = getCurrentLang() == 'tr' ? 'Kayıt sırasında bir hata oluştu' : 'An error occurred during registration';
             }
@@ -93,10 +99,35 @@ include 'includes/header.php';
                     <?php endif; ?>
                     
                     <form method="POST" action="">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="first_name" class="form-label"><?php echo getCurrentLang() == 'tr' ? 'Ad' : 'First Name'; ?></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" id="first_name" name="first_name" 
+                                               value="<?php echo htmlspecialchars($first_name ?? ''); ?>" 
+                                               minlength="2" maxlength="50" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="last_name" class="form-label"><?php echo getCurrentLang() == 'tr' ? 'Soyad' : 'Last Name'; ?></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" id="last_name" name="last_name" 
+                                               value="<?php echo htmlspecialchars($last_name ?? ''); ?>" 
+                                               minlength="2" maxlength="50" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="mb-3">
                             <label for="username" class="form-label"><?php echo t('username'); ?></label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <span class="input-group-text"><i class="fas fa-at"></i></span>
                                 <input type="text" class="form-control" id="username" name="username" 
                                        value="<?php echo htmlspecialchars($username ?? ''); ?>" 
                                        minlength="3" maxlength="50" required>
@@ -216,9 +247,9 @@ document.getElementById('username').addEventListener('input', function() {
     }
 });
 
-// Auto-focus on username field
+// Auto-focus on first name field
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('username').focus();
+    document.getElementById('first_name').focus();
 });
 </script>
 
