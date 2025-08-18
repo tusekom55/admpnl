@@ -573,23 +573,22 @@ include 'includes/header.php';
                                             <td><?php echo date('d.m.Y H:i', strtotime($deposit['created_at'])); ?></td>
                                             <td>
                                                 <?php 
-                                                // Show amount in appropriate currency based on trading parameter and deposit type
-                                                if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd' && $trading_currency == 2) {
-                                                    // USD Mode - show USD amount
-                                                    $display_amount = isset($deposit['usd_amount']) ? $deposit['usd_amount'] : ($deposit['amount'] / $usd_try_rate);
-                                                    echo formatNumber($display_amount) . ' USD';
-                                                    if (isset($deposit['tl_amount']) && $deposit['tl_amount'] > 0) {
-                                                        echo '<br><small class="text-muted">(' . formatNumber($deposit['tl_amount']) . ' TL)</small>';
-                                                    }
-                                                } elseif ($trading_currency == 2) {
-                                                    // USD Mode - convert TL to USD for display
-                                                    $usd_amount = $deposit['amount'] / $usd_try_rate;
-                                                    echo formatNumber($usd_amount) . ' USD';
-                                                    echo '<br><small class="text-muted">(' . formatNumber($deposit['amount']) . ' TL)</small>';
-                                                } else {
-                                                    // TL Mode - show TL amount
-                                                    echo formatNumber($deposit['amount']) . ' TL';
-                                                }
+                                // Show amount in appropriate currency based on trading parameter and deposit type
+                                if (isset($deposit['deposit_type']) && $deposit['deposit_type'] == 'tl_to_usd' && $trading_currency == 2) {
+                                    // TL-to-USD deposit - amount field already contains USD value
+                                    echo formatNumber($deposit['amount']) . ' USD';
+                                    if (isset($deposit['tl_amount']) && $deposit['tl_amount'] > 0) {
+                                        echo '<br><small class="text-muted">(' . formatNumber($deposit['tl_amount']) . ' TL)</small>';
+                                    }
+                                } elseif ($trading_currency == 2) {
+                                    // USD Mode - convert TL to USD for display (legacy deposits)
+                                    $usd_amount = $deposit['amount'] / $usd_try_rate;
+                                    echo formatNumber($usd_amount) . ' USD';
+                                    echo '<br><small class="text-muted">(' . formatNumber($deposit['amount']) . ' TL)</small>';
+                                } else {
+                                    // TL Mode - show TL amount
+                                    echo formatNumber($deposit['amount']) . ' TL';
+                                }
                                                 ?>
                                             </td>
                                             <td><?php echo strtoupper($deposit['method']); ?></td>
