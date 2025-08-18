@@ -922,25 +922,25 @@ if (!in_array($current_page, $public_pages)) {
                 <!-- Main Navigation List -->
                 <ul class="mobile-nav-list">
                     <li class="mobile-nav-item">
-                        <a href="markets.php" class="mobile-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'markets.php' ? 'active' : ''; ?>" data-bs-dismiss="offcanvas">
+                        <a href="markets.php" class="mobile-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'markets.php' ? 'active' : ''; ?>">
                             <i class="mobile-nav-icon fas fa-chart-line"></i>
                             <?php echo getCurrentLang() == 'tr' ? 'Piyasalar' : 'Markets'; ?>
                         </a>
                     </li>
                     <li class="mobile-nav-item">
-                        <a href="portfolio.php" class="mobile-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'portfolio.php' ? 'active' : ''; ?>" data-bs-dismiss="offcanvas">
+                        <a href="portfolio.php" class="mobile-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'portfolio.php' ? 'active' : ''; ?>">
                             <i class="mobile-nav-icon fas fa-chart-pie"></i>
                             <?php echo getCurrentLang() == 'tr' ? 'Portföy' : 'Portfolio'; ?>
                         </a>
                     </li>
                     <li class="mobile-nav-item">
-                        <a href="wallet.php" class="mobile-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'wallet.php' ? 'active' : ''; ?>" data-bs-dismiss="offcanvas">
+                        <a href="wallet.php" class="mobile-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'wallet.php' ? 'active' : ''; ?>">
                             <i class="mobile-nav-icon fas fa-wallet"></i>
                             <?php echo getCurrentLang() == 'tr' ? 'Cüzdan' : 'Wallet'; ?>
                         </a>
                     </li>
                     <li class="mobile-nav-item">
-                        <a href="profile.php" class="mobile-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>" data-bs-dismiss="offcanvas">
+                        <a href="profile.php" class="mobile-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
                             <i class="mobile-nav-icon fas fa-user"></i>
                             <?php echo getCurrentLang() == 'tr' ? 'Profil' : 'Profile'; ?>
                         </a>
@@ -963,10 +963,10 @@ if (!in_array($current_page, $public_pages)) {
                     </div>
                     
                     <div class="d-grid gap-2">
-                        <a href="login.php" class="btn btn-primary" data-bs-dismiss="offcanvas">
+                        <a href="login.php" class="btn btn-primary">
                             <i class="fas fa-sign-in-alt me-2"></i><?php echo getCurrentLang() == 'tr' ? 'Giriş Yap' : 'Sign In'; ?>
                         </a>
-                        <a href="register.php" class="btn btn-outline-primary" data-bs-dismiss="offcanvas">
+                        <a href="register.php" class="btn btn-outline-primary">
                             <i class="fas fa-user-plus me-2"></i><?php echo getCurrentLang() == 'tr' ? 'Kayıt Ol' : 'Sign Up'; ?>
                         </a>
                     </div>
@@ -975,13 +975,13 @@ if (!in_array($current_page, $public_pages)) {
                 <!-- Public Navigation -->
                 <ul class="mobile-nav-list mt-4">
                     <li class="mobile-nav-item">
-                        <a href="markets.php" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+                        <a href="markets.php" class="mobile-nav-link">
                             <i class="mobile-nav-icon fas fa-chart-line"></i>
                             <?php echo getCurrentLang() == 'tr' ? 'Piyasalar' : 'Markets'; ?>
                         </a>
                     </li>
                     <li class="mobile-nav-item">
-                        <a href="index.php" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+                        <a href="index.php" class="mobile-nav-link">
                             <i class="mobile-nav-icon fas fa-home"></i>
                             <?php echo getCurrentLang() == 'tr' ? 'Ana Sayfa' : 'Home'; ?>
                         </a>
@@ -1003,5 +1003,67 @@ if (!in_array($current_page, $public_pages)) {
         </div>
     </div>
     
+    <!-- MOBILE MENU NAVIGATION FIX SCRIPT -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile navigation link handler
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+        
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                
+                // Check if it's an external link or different page
+                if (href && href !== '#' && !href.startsWith('javascript:')) {
+                    e.preventDefault(); // Prevent default navigation
+                    
+                    // Close the offcanvas menu
+                    const offcanvasElement = document.getElementById('mobileMenu');
+                    const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                    
+                    if (offcanvas) {
+                        offcanvas.hide();
+                    }
+                    
+                    // Navigate after a short delay to ensure menu closes
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 150);
+                }
+            });
+        });
+        
+        // Auth buttons handler (login/register)
+        const authButtons = document.querySelectorAll('.mobile-auth-section .btn');
+        
+        authButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                
+                if (href && href !== '#' && !href.startsWith('javascript:')) {
+                    e.preventDefault();
+                    
+                    // Close the offcanvas menu
+                    const offcanvasElement = document.getElementById('mobileMenu');
+                    const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                    
+                    if (offcanvas) {
+                        offcanvas.hide();
+                    }
+                    
+                    // Navigate after delay
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 150);
+                }
+            });
+        });
+        
+        // Debug: Add click event listeners to check if buttons are clickable
+        console.log('Mobile menu navigation handlers attached');
+        console.log('Found mobile nav links:', mobileNavLinks.length);
+    });
+    </script>
+
     <!-- Main Content -->
     <div class="main-content">
