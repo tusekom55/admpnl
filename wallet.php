@@ -421,15 +421,30 @@ include 'includes/header.php';
                                 <!-- Dijital Ödeme Seçimi -->
                                 <div id="digitalDepositDetails" style="display: none;">
                                     <div class="mb-3">
-                                        <label class="form-label">Dijital Ödeme Yöntemi</label>
-                                        <div class="row">
+                                        <label class="form-label">
+                                            <i class="fas fa-mobile-alt me-2 text-primary"></i>
+                                            Dijital Ödeme Yöntemi
+                                        </label>
+                                        <div class="row g-2">
                                             <?php foreach ($digital as $method): ?>
-                                            <div class="col-md-6 mb-2">
-                                                <div class="digital-option p-3 border rounded" onclick="selectDigital('<?php echo $method['code']; ?>', '<?php echo $method['name']; ?>', '<?php echo $method['account_name']; ?>')">
-                                                    <div class="text-center">
-                                                        <div class="h5 mb-1"><?php echo $method['icon']; ?></div>
-                                                        <div class="fw-bold"><?php echo $method['name']; ?></div>
-                                                        <small class="text-muted"><?php echo $method['code']; ?></small>
+                                            <div class="col-md-6 col-12">
+                                                <div class="digital-card p-3 border-0 rounded-3 shadow-sm" onclick="selectDigital('<?php echo $method['code']; ?>', '<?php echo $method['name']; ?>', '<?php echo $method['account_name']; ?>')">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="digital-icon me-3">
+                                                            <div class="rounded-circle bg-gradient-primary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                                                <span style="font-size: 1.5rem; color: white;"><?php echo $method['icon']; ?></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="fw-bold text-dark mb-1"><?php echo $method['name']; ?></div>
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-bolt me-1"></i>
+                                                                Anında Transfer
+                                                            </small>
+                                                        </div>
+                                                        <div class="check-icon-digital" style="opacity: 0;">
+                                                            <i class="fas fa-check-circle text-success fs-5"></i>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -438,25 +453,66 @@ include 'includes/header.php';
                                         <input type="hidden" name="selected_digital" id="selectedDigital">
                                     </div>
                                     
-                                    <div class="alert alert-success" id="digitalInfo" style="display: none;">
-                                        <h6>Dijital Ödeme Bilgileri</h6>
-                                        <strong>Yöntem:</strong> <span id="displayDigitalName"></span><br>
-                                        <strong>Hesap No:</strong> <span id="displayDigitalCode"></span><br>
-                                        <strong>Hesap Adı:</strong> <span id="displayDigitalAccount"></span><br>
+                                    <div class="alert alert-info border-0 shadow-sm" id="digitalInfo" style="display: none;">
+                                        <div class="d-flex align-items-start">
+                                            <i class="fas fa-mobile-alt text-info me-3 mt-1"></i>
+                                            <div class="flex-grow-1">
+                                                <h6 class="alert-heading mb-3">
+                                                    <i class="fas fa-credit-card me-2"></i>
+                                                    Dijital Ödeme Bilgileri
+                                                </h6>
+                                                <div class="row">
+                                                    <div class="col-12 mb-2">
+                                                        <div class="d-flex justify-content-between align-items-center p-2 bg-white rounded border">
+                                                            <span class="text-muted">Yöntem:</span>
+                                                            <span class="fw-bold" id="displayDigitalName"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mb-2">
+                                                        <div class="d-flex justify-content-between align-items-center p-2 bg-white rounded border">
+                                                            <span class="text-muted">Hesap No:</span>
+                                                            <span class="fw-bold" id="displayDigitalCode"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mb-3">
+                                                        <div class="d-flex justify-content-between align-items-center p-2 bg-white rounded border">
+                                                            <span class="text-muted">Hesap Adı:</span>
+                                                            <span class="fw-bold" id="displayDigitalAccount"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="bg-success bg-opacity-10 border border-success rounded p-2">
+                                                    <small class="text-success">
+                                                        <i class="fas fa-lightning-bolt me-2"></i>
+                                                        <strong>Avantaj:</strong> Anında işlem, 7/24 kullanım imkanı.
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Kripto Para Seçimi -->
                                 <div id="cryptoDepositDetails" style="display: none;">
                                     <div class="mb-3">
-                                        <label class="form-label">Kripto Para Seçiniz</label>
-                                        <div class="row">
+                                        <label class="form-label">
+                                            <i class="fab fa-bitcoin me-2 text-warning"></i>
+                                            Kripto Para Seçiniz
+                                        </label>
+                                        <div class="row g-2">
                                             <?php foreach ($cryptos as $crypto): ?>
-                                            <div class="col-md-4 mb-2">
-                                                <div class="crypto-option p-2 border rounded text-center" onclick="selectCrypto('<?php echo $crypto['code']; ?>', '<?php echo $crypto['iban']; ?>', '<?php echo $crypto['account_name']; ?>')">
-                                                    <div class="h6 mb-1"><?php echo $crypto['icon']; ?></div>
-                                                    <div class="fw-bold small"><?php echo $crypto['name']; ?></div>
-                                                    <small class="text-muted"><?php echo $crypto['code']; ?></small>
+                                            <div class="col-md-4 col-6">
+                                                <div class="crypto-card p-3 border-0 rounded-3 shadow-sm text-center" onclick="selectCrypto('<?php echo $crypto['code']; ?>', '<?php echo $crypto['iban']; ?>', '<?php echo $crypto['account_name']; ?>')">
+                                                    <div class="crypto-icon mb-2">
+                                                        <div class="rounded-circle bg-gradient-crypto d-flex align-items-center justify-content-center mx-auto" style="width: 50px; height: 50px; background: linear-gradient(135deg, #f7931e 0%, #ff6b35 100%);">
+                                                            <span style="font-size: 1.8rem; color: white;"><?php echo $crypto['icon']; ?></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="fw-bold text-dark mb-1" style="font-size: 0.9rem;"><?php echo $crypto['name']; ?></div>
+                                                    <small class="text-muted d-block"><?php echo $crypto['code']; ?></small>
+                                                    <div class="check-icon-crypto" style="opacity: 0; position: absolute; top: 10px; right: 10px;">
+                                                        <i class="fas fa-check-circle text-success fs-6"></i>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <?php endforeach; ?>
@@ -464,16 +520,42 @@ include 'includes/header.php';
                                         <input type="hidden" name="selected_crypto" id="selectedCrypto">
                                     </div>
                                     
-                                    <div class="alert alert-warning" id="cryptoInfo" style="display: none;">
-                                        <h6>Kripto Para Bilgileri</h6>
-                                        <strong>Kripto:</strong> <span id="displayCryptoName"></span><br>
-                                        <strong>Network:</strong> <span id="displayCryptoNetwork"></span><br>
-                                        <strong>Wallet Adresi:</strong><br>
-                                        <code class="small" id="displayCryptoAddress"></code><br>
-                                        <small class="text-warning">
-                                            <i class="fas fa-exclamation-triangle me-1"></i>
-                                            Sadece bu ağa gönderim yapın. Yanlış ağ kullanımında paralarınız kaybolabilir!
-                                        </small>
+                                    <div class="alert alert-warning border-0 shadow-sm" id="cryptoInfo" style="display: none;">
+                                        <div class="d-flex align-items-start">
+                                            <i class="fab fa-bitcoin text-warning me-3 mt-1" style="font-size: 1.5rem;"></i>
+                                            <div class="flex-grow-1">
+                                                <h6 class="alert-heading mb-3">
+                                                    <i class="fas fa-wallet me-2"></i>
+                                                    Kripto Para Bilgileri
+                                                </h6>
+                                                <div class="row">
+                                                    <div class="col-12 mb-2">
+                                                        <div class="d-flex justify-content-between align-items-center p-2 bg-white rounded border">
+                                                            <span class="text-muted">Kripto:</span>
+                                                            <span class="fw-bold" id="displayCryptoName"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mb-2">
+                                                        <div class="d-flex justify-content-between align-items-center p-2 bg-white rounded border">
+                                                            <span class="text-muted">Network:</span>
+                                                            <span class="fw-bold" id="displayCryptoNetwork"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mb-3">
+                                                        <div class="p-2 bg-white rounded border">
+                                                            <div class="text-muted mb-1">Wallet Adresi:</div>
+                                                            <code class="d-block bg-light p-2 rounded small text-break" id="displayCryptoAddress"></code>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="bg-danger bg-opacity-10 border border-danger rounded p-2">
+                                                    <small class="text-danger">
+                                                        <i class="fas fa-shield-alt me-2"></i>
+                                                        <strong>Güvenlik Uyarısı:</strong> Sadece bu ağa gönderim yapın. Yanlış ağ kullanımında paralarınız kaybolabilir!
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -865,6 +947,92 @@ include 'includes/header.php';
     transition: opacity 0.3s ease;
 }
 
+/* Modern Digital Payment Card Design */
+.digital-card {
+    border: 2px solid #e9ecef !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.digital-card:hover {
+    border-color: #667eea !important;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15) !important;
+    transform: translateY(-2px);
+}
+
+.digital-card.active {
+    border-color: #667eea !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white !important;
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.3) !important;
+}
+
+.digital-card.active .text-dark {
+    color: white !important;
+}
+
+.digital-card.active .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.digital-card.active .check-icon-digital {
+    opacity: 1 !important;
+}
+
+.check-icon-digital {
+    transition: opacity 0.3s ease;
+}
+
+.digital-card.active .digital-icon .rounded-circle {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Modern Crypto Card Design */
+.crypto-card {
+    border: 2px solid #e9ecef !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.crypto-card:hover {
+    border-color: #f7931e !important;
+    box-shadow: 0 4px 20px rgba(247, 147, 30, 0.15) !important;
+    transform: translateY(-2px);
+}
+
+.crypto-card.active {
+    border-color: #f7931e !important;
+    background: linear-gradient(135deg, #f7931e 0%, #ff6b35 100%);
+    color: white !important;
+    box-shadow: 0 6px 25px rgba(247, 147, 30, 0.3) !important;
+}
+
+.crypto-card.active .text-dark {
+    color: white !important;
+}
+
+.crypto-card.active .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.crypto-card.active .check-icon-crypto {
+    opacity: 1 !important;
+}
+
+.check-icon-crypto {
+    transition: opacity 0.3s ease;
+}
+
+.crypto-card.active .crypto-icon .rounded-circle {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
 /* Legacy styles for compatibility */
 .withdraw-method-card, .bank-option, .crypto-option {
     border: 2px solid #e9ecef;
@@ -1151,42 +1319,70 @@ function selectBank(code, iban, accountName) {
 
 // Digital payment selection
 function selectDigital(code, name, accountName) {
-    // Remove active class from all digital options
+    // Remove active class from all digital cards
+    document.querySelectorAll('.digital-card').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // Also remove from legacy digital options if they exist
     document.querySelectorAll('.digital-option').forEach(el => {
         el.classList.remove('active');
     });
     
-    // Add active class to selected option
-    event.target.closest('.digital-option').classList.add('active');
+    // Add active class to selected card
+    event.target.closest('.digital-card').classList.add('active');
     
     // Set hidden field
     document.getElementById('selectedDigital').value = code;
     
-    // Show digital info
+    // Show digital info with smooth animation
+    const digitalInfo = document.getElementById('digitalInfo');
     document.getElementById('displayDigitalName').textContent = name;
     document.getElementById('displayDigitalCode').textContent = code;
     document.getElementById('displayDigitalAccount').textContent = accountName;
-    document.getElementById('digitalInfo').style.display = 'block';
+    
+    if (digitalInfo) {
+        digitalInfo.style.display = 'block';
+        // Add fade-in animation
+        digitalInfo.style.opacity = '0';
+        setTimeout(() => {
+            digitalInfo.style.opacity = '1';
+        }, 10);
+    }
 }
 
 // Crypto selection
 function selectCrypto(code, address, network) {
-    // Remove active class from all crypto options
+    // Remove active class from all crypto cards
+    document.querySelectorAll('.crypto-card').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // Also remove from legacy crypto options if they exist
     document.querySelectorAll('.crypto-option').forEach(el => {
         el.classList.remove('active');
     });
     
-    // Add active class to selected option
-    event.target.closest('.crypto-option').classList.add('active');
+    // Add active class to selected card
+    event.target.closest('.crypto-card').classList.add('active');
     
     // Set hidden field
     document.getElementById('selectedCrypto').value = code;
     
-    // Show crypto info
+    // Show crypto info with smooth animation
+    const cryptoInfo = document.getElementById('cryptoInfo');
     document.getElementById('displayCryptoName').textContent = code;
     document.getElementById('displayCryptoNetwork').textContent = network;
     document.getElementById('displayCryptoAddress').textContent = address;
-    document.getElementById('cryptoInfo').style.display = 'block';
+    
+    if (cryptoInfo) {
+        cryptoInfo.style.display = 'block';
+        // Add fade-in animation
+        cryptoInfo.style.opacity = '0';
+        setTimeout(() => {
+            cryptoInfo.style.opacity = '1';
+        }, 10);
+    }
 }
 
 // Initialize when page loads
