@@ -1104,20 +1104,273 @@ include 'includes/header.php';
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    .withdraw-method-card {
+    /* Container spacing */
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    /* Card spacing */
+    .card {
         margin-bottom: 1rem;
     }
     
-    .bank-option, .crypto-option {
+    /* Balance cards - stack vertically on mobile */
+    .col-md-6.col-12 {
+        margin-bottom: 1rem;
+    }
+    
+    /* Wallet overview adjustments */
+    .fa-3x {
+        font-size: 2rem !important;
+    }
+    
+    .h3 {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Form improvements */
+    .form-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .form-control, .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
         padding: 0.75rem;
     }
     
-    .bank-logo {
-        height: 30px;
+    .btn {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
     }
     
-    .bank-card {
+    /* Payment method cards */
+    .bank-card, .digital-card, .crypto-card {
+        margin-bottom: 0.75rem;
+        padding: 1rem !important;
+    }
+    
+    .bank-card .rounded-circle,
+    .digital-card .rounded-circle,
+    .crypto-card .rounded-circle {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    .bank-card .rounded-circle span,
+    .digital-card .rounded-circle span,
+    .crypto-card .rounded-circle span {
+        font-size: 1.2rem !important;
+    }
+    
+    /* Text adjustments */
+    .fw-bold {
+        font-size: 0.9rem;
+    }
+    
+    small {
+        font-size: 0.8rem;
+    }
+    
+    /* Alert improvements */
+    .alert {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .alert h6 {
+        font-size: 1rem;
+    }
+    
+    /* Table responsive improvements */
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+    
+    .table td {
+        padding: 0.5rem 0.25rem;
+        white-space: nowrap;
+    }
+    
+    .badge {
+        font-size: 0.7rem;
+    }
+    
+    /* Crypto cards - 2 columns on mobile */
+    .crypto-card {
         margin-bottom: 0.5rem;
+    }
+    
+    /* Amount buttons */
+    .btn-sm {
+        padding: 0.375rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Tab improvements */
+    .nav-pills .nav-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Input group improvements */
+    .input-group-text {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Statistics cards */
+    .bg-primary.bg-opacity-10,
+    .bg-success.bg-opacity-10,
+    .bg-info.bg-opacity-10,
+    .bg-warning.bg-opacity-10 {
+        padding: 0.75rem !important;
+    }
+    
+    .fa-2x {
+        font-size: 1.5rem !important;
+    }
+    
+    .h4 {
+        font-size: 1.25rem !important;
+    }
+    
+    /* Touch improvements */
+    .bank-card, .digital-card, .crypto-card {
+        min-height: 60px;
+        touch-action: manipulation;
+    }
+    
+    /* Spacing adjustments */
+    .mb-3 {
+        margin-bottom: 1rem !important;
+    }
+    
+    .p-3 {
+        padding: 0.75rem !important;
+    }
+    
+    .p-4 {
+        padding: 1rem !important;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 576px) {
+    /* Further optimizations for very small screens */
+    .container {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    /* Force single column for crypto cards */
+    .crypto-card {
+        margin-bottom: 0.5rem;
+    }
+    
+    .col-md-4.col-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    
+    /* Smaller text for very small screens */
+    .h3 {
+        font-size: 1.25rem !important;
+    }
+    
+    .h4 {
+        font-size: 1.1rem !important;
+    }
+    
+    .h5 {
+        font-size: 1rem !important;
+    }
+    
+    .h6 {
+        font-size: 0.9rem !important;
+    }
+    
+    /* Tighter spacing */
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .card-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    /* Stack form rows */
+    .row.mb-3 .col-md-6 {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Responsive table adjustments */
+    .table td {
+        padding: 0.375rem 0.125rem;
+        font-size: 0.8rem;
+    }
+    
+    .table th {
+        padding: 0.375rem 0.125rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Button improvements */
+    .btn-group-sm > .btn, .btn-sm {
+        padding: 0.25rem 0.375rem;
+        font-size: 0.75rem;
+    }
+    
+    /* Modal and overlay improvements */
+    .alert .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .alert .d-flex .me-3 {
+        margin-right: 0 !important;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Landscape mobile orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+    .col-lg-6 {
+        margin-bottom: 1rem;
+    }
+    
+    /* Reduce vertical spacing in landscape */
+    .mb-4 {
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Optimize balance cards for landscape */
+    .text-center.p-4 {
+        padding: 1rem !important;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .bank-card:hover,
+    .digital-card:hover,
+    .crypto-card:hover {
+        transform: none;
+        border-color: inherit !important;
+        box-shadow: inherit !important;
+    }
+    
+    .bank-card:active,
+    .digital-card:active,
+    .crypto-card:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
     }
 }
 </style>
