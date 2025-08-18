@@ -209,130 +209,243 @@ if (!in_array($current_page, $public_pages)) {
         
         /* LEVERAGE MODAL MOBILE OPTIMIZATIONS */
         @media (max-width: 768px) {
-            /* Modal content height optimization */
-            .modal-content {
-                max-height: 95vh !important;
+            /* Modal size and positioning for mobile */
+            .modal-dialog.modal-responsive-leverage {
+                max-width: 100vw !important;
+                width: 100vw !important;
+                margin: 0 !important;
+                top: 0 !important;
+                height: 100vh !important;
+                display: flex !important;
+                align-items: stretch !important;
             }
             
-            .modal-body {
-                max-height: calc(95vh - 120px) !important;
-                padding: 0.5rem !important;
+            /* Modal content optimization */
+            #leverageModal .modal-content {
+                max-height: 100vh !important;
+                height: 100vh !important;
+                border-radius: 0 !important;
+                overflow: hidden !important;
+                display: flex !important;
+                flex-direction: column !important;
             }
             
-            /* Leverage modal specific styles */
+            /* Modal header compact */
+            #leverageModal .modal-header {
+                padding: 0.75rem 1rem !important;
+                background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%) !important;
+                color: #000 !important;
+                flex-shrink: 0 !important;
+                min-height: 60px !important;
+            }
+            
+            #leverageModal .modal-header .h5 {
+                font-size: 1rem !important;
+                font-weight: 700 !important;
+            }
+            
+            #leverageModal .modal-header .badge {
+                font-size: 0.7rem !important;
+                padding: 0.25rem 0.5rem !important;
+                background: rgba(0,0,0,0.2) !important;
+                color: #fff !important;
+            }
+            
+            /* Modal body full scroll */
             #leverageModal .modal-body {
-                font-size: 0.8rem !important;
+                flex: 1 !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                padding: 1rem !important;
+                font-size: 0.85rem !important;
+                background: #f8f9fa !important;
+                max-height: none !important;
+                -webkit-overflow-scrolling: touch !important;
             }
             
+            /* Form elements compact */
             #leverageModal .form-label {
-                font-size: 0.75rem !important;
+                font-size: 0.8rem !important;
                 font-weight: 600 !important;
                 margin-bottom: 0.25rem !important;
+                color: #333 !important;
             }
             
             #leverageModal .form-control,
             #leverageModal .form-select {
-                font-size: 0.8rem !important;
-                padding: 0.4rem !important;
-                min-height: 36px !important;
+                font-size: 0.85rem !important;
+                padding: 0.6rem !important;
+                min-height: 44px !important;
+                border-radius: 8px !important;
+                border: 2px solid #e9ecef !important;
+            }
+            
+            #leverageModal .form-control:focus,
+            #leverageModal .form-select:focus {
+                border-color: #ffc107 !important;
+                box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25) !important;
             }
             
             #leverageModal .input-group-text {
-                font-size: 0.75rem !important;
-                padding: 0.4rem 0.5rem !important;
+                font-size: 0.8rem !important;
+                padding: 0.6rem !important;
+                background: #ffc107 !important;
+                color: #000 !important;
+                font-weight: 600 !important;
+                border: 2px solid #ffc107 !important;
             }
             
+            /* Row and column spacing */
+            #leverageModal .row {
+                margin-bottom: 1rem !important;
+            }
+            
+            #leverageModal .col-md-6 {
+                margin-bottom: 1rem !important;
+            }
+            
+            /* Card optimizations */
             #leverageModal .card {
-                margin-bottom: 0.5rem !important;
-            }
-            
-            #leverageModal .card-body {
-                padding: 0.4rem !important;
+                margin-bottom: 1rem !important;
+                border: none !important;
+                border-radius: 12px !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
             }
             
             #leverageModal .card-header {
-                padding: 0.4rem 0.5rem !important;
+                padding: 0.75rem 1rem !important;
+                background: linear-gradient(135deg, #007bff, #0056b3) !important;
+                color: white !important;
+                border-bottom: none !important;
+                border-radius: 12px 12px 0 0 !important;
             }
             
             #leverageModal .card-header h6 {
-                font-size: 0.8rem !important;
+                font-size: 0.9rem !important;
                 margin-bottom: 0 !important;
+                font-weight: 600 !important;
             }
             
-            /* Compact calculation display */
+            #leverageModal .card-body {
+                padding: 1rem !important;
+                background: white !important;
+            }
+            
+            /* Calculation grid optimization */
+            #leverageModal .card-body .row.text-center {
+                margin: 0 !important;
+            }
+            
             #leverageModal .card-body .row.text-center .col-6,
             #leverageModal .card-body .row.text-center .col-md-3 {
-                margin-bottom: 0.5rem !important;
-                padding: 0.25rem !important;
+                margin-bottom: 0.75rem !important;
+                padding: 0.5rem !important;
             }
             
             #leverageModal .card-body small {
-                font-size: 0.65rem !important;
-                line-height: 1.2 !important;
+                font-size: 0.7rem !important;
+                line-height: 1.3 !important;
+                color: #666 !important;
+                font-weight: 500 !important;
             }
             
             #leverageModal .card-body strong {
-                font-size: 0.75rem !important;
+                font-size: 0.85rem !important;
                 display: block !important;
-                margin-top: 0.1rem !important;
+                margin-top: 0.25rem !important;
+                font-weight: 700 !important;
             }
             
-            /* Trading buttons mobile optimization */
+            /* Special styling for different card types */
+            #leverageModal .bg-danger {
+                background: linear-gradient(135deg, #dc3545, #c82333) !important;
+            }
+            
+            #leverageModal .bg-success {
+                background: linear-gradient(135deg, #28a745, #20c997) !important;
+            }
+            
+            /* Trading buttons - fixed bottom */
             #leverageModal .d-flex.gap-2 {
-                gap: 0.5rem !important;
-                margin-top: 0.5rem !important;
+                position: sticky !important;
+                bottom: 0 !important;
+                background: white !important;
+                padding: 1rem !important;
+                margin: 1rem -1rem -1rem -1rem !important;
+                border-top: 2px solid #e9ecef !important;
+                gap: 0.75rem !important;
+                z-index: 10 !important;
+                box-shadow: 0 -2px 8px rgba(0,0,0,0.1) !important;
             }
             
             #leverageModal .d-flex.gap-2 .btn {
-                font-size: 0.75rem !important;
-                padding: 0.5rem 0.25rem !important;
-                min-height: 40px !important;
+                font-size: 0.9rem !important;
+                padding: 0.8rem 1rem !important;
+                min-height: 48px !important;
+                font-weight: 700 !important;
+                border-radius: 12px !important;
+                border: none !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.5px !important;
+                flex: 1 !important;
+            }
+            
+            #leverageModal .btn-success {
+                background: linear-gradient(135deg, #28a745, #20c997) !important;
+                box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+            }
+            
+            #leverageModal .btn-danger {
+                background: linear-gradient(135deg, #dc3545, #c82333) !important;
+                box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3) !important;
             }
             
             /* Alert box optimization */
             #leverageModal .alert {
-                margin-top: 0.5rem !important;
-                margin-bottom: 0 !important;
-                padding: 0.5rem !important;
-                font-size: 0.7rem !important;
+                margin: 1rem 0 !important;
+                padding: 1rem !important;
+                font-size: 0.8rem !important;
+                border-radius: 12px !important;
+                border: none !important;
+                background: linear-gradient(135deg, #fff3cd, #ffeaa7) !important;
+                color: #856404 !important;
+                line-height: 1.4 !important;
+            }
+            
+            #leverageModal .alert .fas {
+                margin-right: 0.5rem !important;
+                color: #f39c12 !important;
             }
             
             #leverageModal .alert strong {
-                font-size: 0.7rem !important;
+                font-size: 0.8rem !important;
                 display: inline !important;
                 margin-top: 0 !important;
+                color: #856404 !important;
             }
             
-            /* Row spacing optimization */
-            #leverageModal .row {
-                margin-bottom: 0.5rem !important;
+            /* Close button optimization */
+            #leverageModal .btn-close {
+                background: rgba(255,255,255,0.2) !important;
+                border-radius: 50% !important;
+                opacity: 1 !important;
+                font-size: 1.2rem !important;
+                width: 32px !important;
+                height: 32px !important;
             }
             
-            #leverageModal .col-md-6 {
-                margin-bottom: 0.5rem !important;
+            /* Smooth scrolling */
+            #leverageModal .modal-body::-webkit-scrollbar {
+                width: 4px !important;
             }
             
-            /* Modal header mobile optimization */
-            #leverageModal .modal-header {
-                padding: 0.5rem !important;
+            #leverageModal .modal-body::-webkit-scrollbar-track {
+                background: #f1f1f1 !important;
             }
             
-            #leverageModal .modal-header .d-flex > div:first-child {
-                flex-shrink: 0 !important;
-            }
-            
-            #leverageModal .modal-header .ms-auto {
-                text-align: right !important;
-                min-width: 80px !important;
-            }
-            
-            #leverageModal .modal-header .h5 {
-                font-size: 0.9rem !important;
-            }
-            
-            #leverageModal .modal-header .badge {
-                font-size: 0.6rem !important;
-                padding: 0.2rem 0.4rem !important;
+            #leverageModal .modal-body::-webkit-scrollbar-thumb {
+                background: #ffc107 !important;
+                border-radius: 2px !important;
             }
         }
     </style>
