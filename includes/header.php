@@ -866,41 +866,10 @@ if (!in_array($current_page, $public_pages)) {
                     </div>
                     
                     <?php if (isLoggedIn()): ?>
-                        <!-- Admin Button (only for admin users) -->
-                        <?php 
-                        // Check if user is admin
-                        $isAdmin = false;
-                        try {
-                            $database = new Database();
-                            $db = $database->getConnection();
-                            $query = "SELECT role, is_admin FROM users WHERE id = ?";
-                            $stmt = $db->prepare($query);
-                            $stmt->execute([$_SESSION['user_id']]);
-                            $userInfo = $stmt->fetch(PDO::FETCH_ASSOC);
-                            
-                            // Debug - Temporarily show values
-                            echo "<!-- DEBUG: User ID: " . $_SESSION['user_id'] . " -->";
-                            echo "<!-- DEBUG: User Info: " . print_r($userInfo, true) . " -->";
-                            echo "<!-- DEBUG: is_admin value: " . (isset($userInfo['is_admin']) ? $userInfo['is_admin'] : 'NOT SET') . " -->";
-                            echo "<!-- DEBUG: is_admin type: " . (isset($userInfo['is_admin']) ? gettype($userInfo['is_admin']) : 'NOT SET') . " -->";
-                            
-                            // Check if user is admin (multiple conditions for compatibility)
-                            $isAdmin = ($userInfo && (
-                                (isset($userInfo['role']) && $userInfo['role'] === 'admin') ||
-                                (isset($userInfo['is_admin']) && ($userInfo['is_admin'] == 1 || $userInfo['is_admin'] === '1' || $userInfo['is_admin'] === 1))
-                            ));
-                        } catch (Exception $e) {
-                            // If there's an error, don't show admin access
-                            $isAdmin = false;
-                            // echo "<!-- DEBUG ERROR: " . $e->getMessage() . " -->";
-                        }
-                        ?>
-                        
-                        <?php if ($isAdmin): ?>
-                            <a href="admin.php" class="btn btn-danger me-2 d-none d-md-inline-block" title="<?php echo getCurrentLang() == 'tr' ? 'Admin Paneli' : 'Admin Panel'; ?>">
-                                <i class="fas fa-cog me-1"></i><span class="d-none d-lg-inline"><?php echo getCurrentLang() == 'tr' ? 'Admin' : 'Admin'; ?></span>
-                            </a>
-                        <?php endif; ?>
+                        <!-- Admin Button (TEST - always show) -->
+                        <a href="admin.php" class="btn btn-danger me-2 d-none d-md-inline-block" title="<?php echo getCurrentLang() == 'tr' ? 'Admin Paneli' : 'Admin Panel'; ?>">
+                            <i class="fas fa-cog me-1"></i><span class="d-none d-lg-inline"><?php echo getCurrentLang() == 'tr' ? 'Admin' : 'Admin'; ?></span>
+                        </a>
                         
                         <!-- User Balance (Parametric) -->
                         <div class="me-3 d-none d-md-block">
@@ -985,14 +954,13 @@ if (!in_array($current_page, $public_pages)) {
                             <?php echo getCurrentLang() == 'tr' ? 'Profil' : 'Profile'; ?>
                         </a>
                     </li>
-                    <?php if ($isAdmin): ?>
+                    <!-- TEST - Admin button always visible -->
                     <li class="mobile-nav-item">
                         <a href="admin.php" class="mobile-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin.php' ? 'active' : ''; ?>" style="border-color: #dc3545; color: #dc3545;">
                             <i class="mobile-nav-icon fas fa-cog"></i>
-                            <?php echo getCurrentLang() == 'tr' ? 'Admin Paneli' : 'Admin Panel'; ?>
+                            <?php echo getCurrentLang() == 'tr' ? 'Admin Paneli (TEST)' : 'Admin Panel (TEST)'; ?>
                         </a>
                     </li>
-                    <?php endif; ?>
                 </ul>
                 
                 <!-- Logout Section -->
