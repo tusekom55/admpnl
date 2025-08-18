@@ -476,7 +476,7 @@ if (!in_array($current_page, $public_pages)) {
             top: 0 !important;
             left: 0 !important;
             right: 0 !important;
-            z-index: 9999 !important;
+            z-index: 10050 !important;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
         }
         
@@ -594,6 +594,7 @@ if (!in_array($current_page, $public_pages)) {
             border: none !important;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.15) !important;
             background: white !important;
+            z-index: 10049 !important;
         }
         
         .offcanvas-header {
@@ -798,6 +799,16 @@ if (!in_array($current_page, $public_pages)) {
             border-radius: 10px !important;
             font-weight: 500 !important;
             padding: 0.75rem 1.5rem !important;
+        }
+        
+        /* Offcanvas backdrop z-index fix */
+        .offcanvas-backdrop {
+            z-index: 10048 !important;
+        }
+        
+        /* Category tabs should be below menu */
+        .mobile-category-tabs {
+            z-index: 1000 !important;
         }
         
         /* Responsive adjustments */
