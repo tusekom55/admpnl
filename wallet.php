@@ -16,25 +16,58 @@ if ($_POST) {
         $amount = (float)($_POST['amount'] ?? 0);
         $method = $_POST['method'] ?? '';
         $reference = sanitizeInput($_POST['reference'] ?? '');
+        $deposit_type = $_POST['deposit_type'] ?? 'normal';
+        $tl_amount = (float)($_POST['tl_amount'] ?? 0);
         
-        if ($amount < MIN_DEPOSIT_AMOUNT) {
-            $error = getCurrentLang() == 'tr' ? 
-                'Minimum para yatırma tutarı ' . MIN_DEPOSIT_AMOUNT . ' TL' : 
-                'Minimum deposit amount is ' . MIN_DEPOSIT_AMOUNT . ' TL';
-        } elseif (!in_array($method, ['iban', 'papara'])) {
-            $error = getCurrentLang() == 'tr' ? 'Geçersiz ödeme yöntemi' : 'Invalid payment method';
-        } else {
-            $database = new Database();
-            $db = $database->getConnection();
-            
-            $query = "INSERT INTO deposits (user_id, amount, method, reference) VALUES (?, ?, ?, ?)";
-            $stmt = $db->prepare($query);
-            
-            if ($stmt->execute([$user_id, $amount, $method, $reference])) {
-                $success = t('deposit_request_sent');
-                logActivity($user_id, 'deposit_request', "Amount: $amount TL, Method: $method");
+        // Handle different deposit types
+        if ($deposit_type == 'tl_to_usd') {
+            // USD Mode: User pays in TL, gets USD
+            if ($tl_amount < MIN_DEPOSIT_AMOUNT) {
+                $error = getCurrentLang() == 'tr' ? 
+                    'Minimum para yatırma tutarı ' . MIN_DEPOSIT_AMOUNT . ' TL' : 
+                    'Minimum deposit amount is ' . MIN_DEPOSIT_AMOUNT . ' TL';
+            } elseif ($amount <= 0) {
+                $error = getCurrentLang() == 'tr' ? 'Geçersiz dolar tutarı' : 'Invalid USD amount';
+            } elseif (!in_array($method, ['iban', 'papara'])) {
+                $error = getCurrentLang() == 'tr' ? 'Geçersiz ödeme yöntemi' : 'Invalid payment method';
             } else {
-                $error = getCurrentLang() == 'tr' ? 'Bir hata oluştu' : 'An error occurred';
+                $database = new Database();
+                $db = $database->getConnection();
+                
+                // Insert deposit record with TL-to-USD conversion info
+                $query = "INSERT INTO deposits (user_id, amount, method, reference, deposit_type, tl_amount, usd_amount, exchange_rate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                $stmt = $db->prepare($query);
+                
+                $exchange_rate = $usd_try_rate;
+                
+                if ($stmt->execute([$user_id, $amount, $method, $reference, 'tl_to_usd', $tl_amount, $amount, $exchange_rate])) {
+                    $success = t('deposit_request_sent');
+                    logActivity($user_id, 'deposit_request', "TL-to-USD Deposit: $tl_amount TL → $amount USD (Rate: $exchange_rate), Method: $method");
+                } else {
+                    $error = getCurrentLang() == 'tr' ? 'Bir hata oluştu' : 'An error occurred';
+                }
+            }
+        } else {
+            // Normal TL deposit
+            if ($amount < MIN_DEPOSIT_AMOUNT) {
+                $error = getCurrentLang() == 'tr' ? 
+                    'Minimum para yatırma tutarı ' . MIN_DEPOSIT_AMOUNT . ' TL' : 
+                    'Minimum deposit amount is ' . MIN_DEPOSIT_AMOUNT . ' TL';
+            } elseif (!in_array($method, ['iban', 'papara'])) {
+                $error = getCurrentLang() == 'tr' ? 'Geçersiz ödeme yöntemi' : 'Invalid payment method';
+            } else {
+                $database = new Database();
+                $db = $database->getConnection();
+                
+                $query = "INSERT INTO deposits (user_id, amount, method, reference, deposit_type) VALUES (?, ?, ?, ?, ?)";
+                $stmt = $db->prepare($query);
+                
+                if ($stmt->execute([$user_id, $amount, $method, $reference, 'normal'])) {
+                    $success = t('deposit_request_sent');
+                    logActivity($user_id, 'deposit_request', "Amount: $amount TL, Method: $method");
+                } else {
+                    $error = getCurrentLang() == 'tr' ? 'Bir hata oluştu' : 'An error occurred';
+                }
             }
         }
     }
@@ -225,24 +258,62 @@ include 'includes/header.php';
                         <!-- Deposit Form -->
                         <div class="tab-pane fade show active" id="deposit" role="tabpanel">
                             <form method="POST" action="">
+                                <?php if ($trading_currency == 2): // USD Mode - User pays in TL, gets USD ?>
+                                <!-- TL Input for USD Account -->
                                 <div class="mb-3">
-                                    <label class="form-label"><?php echo getCurrentLang() == 'tr' ? 'Yatırılacak Tutar' : 'Deposit Amount'; ?></label>
+                                    <label class="form-label">
+                                        <i class="fas fa-lira-sign me-1 text-success"></i>
+                                        Yatırılacak TL Tutarı
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" name="tl_amount" step="0.01" 
+                                               min="<?php echo MIN_DEPOSIT_AMOUNT; ?>" id="tlDepositAmount" 
+                                               oninput="calculateUSDConversion()" required>
+                                        <span class="input-group-text bg-success text-white">TL</span>
+                                    </div>
+                                    <small class="text-muted">
+                                        Minimum: <?php echo MIN_DEPOSIT_AMOUNT; ?> TL
+                                    </small>
+                                </div>
+
+                                <!-- USD Equivalent Display -->
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-dollar-sign me-1 text-primary"></i>
+                                        Hesabınıza Geçecek Dolar Miktarı
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control bg-light" id="usdEquivalent" 
+                                               step="0.01" readonly placeholder="0.00">
+                                        <span class="input-group-text bg-primary text-white">USD</span>
+                                    </div>
+                                    <small class="text-info">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        1 USD = <?php echo formatNumber($usd_try_rate, 4); ?> TL kurunda hesaplanmaktadır
+                                    </small>
+                                </div>
+
+                                <!-- Hidden field for backend processing -->
+                                <input type="hidden" name="amount" id="hiddenUSDAmount" value="">
+                                <input type="hidden" name="deposit_type" value="tl_to_usd">
+
+                                <?php else: // TL Mode - Normal TL Deposit ?>
+                                <!-- Normal TL Deposit -->
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-lira-sign me-1 text-success"></i>
+                                        Yatırılacak TL Tutarı
+                                    </label>
                                     <div class="input-group">
                                         <input type="number" class="form-control" name="amount" step="0.01" 
-                                               min="<?php echo MIN_DEPOSIT_AMOUNT; ?>" id="depositAmount" 
-                                               oninput="calculateDepositConversion()" required>
-                                        <span class="input-group-text" id="depositCurrencySymbol">
-                                            <?php echo $trading_currency == 1 ? 'TL' : 'USD'; ?>
-                                        </span>
+                                               min="<?php echo MIN_DEPOSIT_AMOUNT; ?>" required>
+                                        <span class="input-group-text bg-success text-white">TL</span>
                                     </div>
-                                    <div class="d-flex justify-content-between">
-                                        <small class="text-muted">
-                                            <?php echo getCurrentLang() == 'tr' ? 'Minimum:' : 'Minimum:'; ?> 
-                                            <?php echo MIN_DEPOSIT_AMOUNT; ?> <?php echo $trading_currency == 1 ? 'TL' : 'USD'; ?>
-                                        </small>
-                                        <small class="text-info" id="depositConversion"></small>
-                                    </div>
+                                    <small class="text-muted">
+                                        Minimum: <?php echo MIN_DEPOSIT_AMOUNT; ?> TL
+                                    </small>
                                 </div>
+                                <?php endif; ?>
                                 
                                 <div class="mb-3">
                                     <label class="form-label"><?php echo getCurrentLang() == 'tr' ? 'Ödeme Yöntemi' : 'Payment Method'; ?></label>
@@ -637,7 +708,31 @@ function setAmount(amount) {
     }
 }
 
-// Calculate deposit conversion
+// Calculate USD conversion for USD Mode deposits (TL to USD)
+function calculateUSDConversion() {
+    const tlAmountInput = document.getElementById('tlDepositAmount');
+    const usdEquivalentInput = document.getElementById('usdEquivalent');
+    const hiddenUSDAmountInput = document.getElementById('hiddenUSDAmount');
+    
+    if (!tlAmountInput || !usdEquivalentInput || !hiddenUSDAmountInput) return;
+    
+    const tlAmount = parseFloat(tlAmountInput.value) || 0;
+    
+    if (tlAmount <= 0) {
+        usdEquivalentInput.value = '';
+        hiddenUSDAmountInput.value = '';
+        return;
+    }
+    
+    // Convert TL to USD
+    const usdAmount = tlAmount / USD_TRY_RATE;
+    
+    // Update display and hidden field
+    usdEquivalentInput.value = usdAmount.toFixed(4);
+    hiddenUSDAmountInput.value = usdAmount.toFixed(4);
+}
+
+// Calculate deposit conversion (for TL Mode)
 function calculateDepositConversion() {
     const amountInput = document.getElementById('depositAmount');
     const conversionDisplay = document.getElementById('depositConversion');
