@@ -21,9 +21,15 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Handle profile update
 if ($_POST && isset($_POST['update_profile'])) {
+    $first_name = sanitizeInput($_POST['first_name'] ?? '');
+    $last_name = sanitizeInput($_POST['last_name'] ?? '');
     $email = sanitizeInput($_POST['email'] ?? '');
     
-    if (empty($email)) {
+    if (empty($first_name)) {
+        $error = getCurrentLang() == 'tr' ? 'Ad gerekli' : 'First name is required';
+    } elseif (empty($last_name)) {
+        $error = getCurrentLang() == 'tr' ? 'Soyad gerekli' : 'Last name is required';
+    } elseif (empty($email)) {
         $error = getCurrentLang() == 'tr' ? 'E-posta adresi gerekli' : 'Email address is required';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = getCurrentLang() == 'tr' ? 'Geçerli bir e-posta adresi girin' : 'Please enter a valid email address';
@@ -36,13 +42,15 @@ if ($_POST && isset($_POST['update_profile'])) {
         if ($stmt->fetch()) {
             $error = getCurrentLang() == 'tr' ? 'Bu e-posta adresi zaten kullanılıyor' : 'This email address is already in use';
         } else {
-            $query = "UPDATE users SET email = ? WHERE id = ?";
+            $query = "UPDATE users SET first_name = ?, last_name = ?, email = ? WHERE id = ?";
             $stmt = $db->prepare($query);
             
-            if ($stmt->execute([$email, $user_id])) {
+            if ($stmt->execute([$first_name, $last_name, $email, $user_id])) {
                 $success = getCurrentLang() == 'tr' ? 'Profil başarıyla güncellendi' : 'Profile updated successfully';
+                $user['first_name'] = $first_name;
+                $user['last_name'] = $last_name;
                 $user['email'] = $email;
-                logActivity($user_id, 'profile_update', 'Email updated');
+                logActivity($user_id, 'profile_update', 'Profile updated');
             } else {
                 $error = getCurrentLang() == 'tr' ? 'Bir hata oluştu' : 'An error occurred';
             }
@@ -115,6 +123,25 @@ include 'includes/header.php';
                     
                     <!-- Profile Update Form -->
                     <form method="POST" action="">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><?php echo getCurrentLang() == 'tr' ? 'Ad' : 'First Name'; ?></label>
+                                    <input type="text" class="form-control" name="first_name" 
+                                           value="<?php echo htmlspecialchars($user['first_name'] ?? ''); ?>" 
+                                           minlength="2" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><?php echo getCurrentLang() == 'tr' ? 'Soyad' : 'Last Name'; ?></label>
+                                    <input type="text" class="form-control" name="last_name" 
+                                           value="<?php echo htmlspecialchars($user['last_name'] ?? ''); ?>" 
+                                           minlength="2" required>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
