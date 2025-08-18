@@ -37,7 +37,8 @@ function getSettings($db) {
         'company_address' => 'İstanbul, Türkiye',
         'api_update_interval' => '30',
         'email_notifications' => '1',
-        'sms_notifications' => '0'
+        'sms_notifications' => '0',
+        'jivochat_code' => ''
     ];
     
     return array_merge($defaults, $settings);
@@ -319,6 +320,23 @@ try {
                                     <div class="form-check form-switch mb-3">
                                         <input class="form-check-input" type="checkbox" name="sms_notifications" value="1" <?php echo $settings['sms_notifications'] == '1' ? 'checked' : ''; ?>>
                                         <label class="form-check-label">SMS Bildirimleri</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- JivoChat Entegrasyonu -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label class="form-label"><i class="fas fa-comments"></i> JivoChat Canlı Destek Kodu</label>
+                                        <textarea class="form-control" name="jivochat_code" rows="4" placeholder="JivoChat entegrasyon kodunuzu buraya yapıştırın..."><?php echo htmlspecialchars($settings['jivochat_code']); ?></textarea>
+                                        <div class="form-text">
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle"></i> 
+                                                JivoChat hesabınızdan aldığınız script kodunu buraya yapıştırın. 
+                                                Kod tüm sayfalarda görünecek ve canlı destek özelliği aktif hale gelecektir.
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -1065,5 +1065,26 @@ if (!in_array($current_page, $public_pages)) {
     });
     </script>
 
+    <?php
+    // JivoChat entegrasyonu - settings tablosundan al
+    try {
+        $database = new Database();
+        $db = $database->getConnection();
+        $query = "SELECT setting_value FROM settings WHERE setting_key = 'jivochat_code'";
+        $stmt = $db->prepare($query);
+        $stmt->execute();
+        $jivochat_code = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // JivoChat kodu varsa ekle
+        if ($jivochat_code && !empty(trim($jivochat_code['setting_value']))) {
+            echo "<!-- JivoChat Canlı Destek -->\n";
+            echo $jivochat_code['setting_value'];
+            echo "\n<!-- /JivoChat -->\n";
+        }
+    } catch (Exception $e) {
+        // Hata durumunda sessizce devam et
+    }
+    ?>
+
     <!-- Main Content -->
     <div class="main-content">

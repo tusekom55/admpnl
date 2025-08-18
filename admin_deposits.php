@@ -40,7 +40,13 @@ if ($_POST) {
                     $stmt = $db->prepare($query);
                     $stmt->execute([$deposit_id]);
                     
-                    // Deposit type'a göre uygun bakiyeye ekle
+                    // Önce bu deposit için daha önce transaction oluşturulup oluşturulmadığını kontrol et
+                    $query = "SELECT COUNT(*) as count FROM transactions WHERE user_id = ? AND type = 'DEPOSIT' AND amount = ? AND created_at >= ?";
+                    $stmt = $db->prepare($query);
+                    $stmt->execute([$deposit['user_id'], $deposit['amount'], date('Y-m-d H:i:s', strtotime($deposit['created_at']) - 60)]);
+                    $existing_transaction = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    // Deposit type'a göre uygun bakiyeye ekle - sadece transaction yoksa
                     $is_usd_deposit = false;
                     $usd_amount = $deposit['amount'];
                     
@@ -58,20 +64,25 @@ if ($_POST) {
                         }
                     }
                     
-                    if ($is_usd_deposit) {
-                        // TL-to-USD deposit - USD bakiyesine ekle
-                        $query = "UPDATE users SET balance_usd = balance_usd + ? WHERE id = ?";
-                        $stmt = $db->prepare($query);
-                        $stmt->execute([$usd_amount, $deposit['user_id']]);
-                    } else {
-                        // Normal TL deposit - TL bakiyesine ekle
-                        $query = "UPDATE users SET balance_tl = balance_tl + ? WHERE id = ?";
-                        $stmt = $db->prepare($query);
-                        $stmt->execute([$deposit['amount'], $deposit['user_id']]);
+                    // Sadece daha önce transaction oluşturulmamışsa bakiye güncelle
+                    if ($existing_transaction['count'] == 0) {
+                        if ($is_usd_deposit) {
+                            // TL-to-USD deposit - USD bakiyesine ekle
+                            $query = "UPDATE users SET balance_usd = balance_usd + ? WHERE id = ?";
+                            $stmt = $db->prepare($query);
+                            $stmt->execute([$usd_amount, $deposit['user_id']]);
+                        } else {
+                            // Normal TL deposit - TL bakiyesine ekle
+                            $query = "UPDATE users SET balance_tl = balance_tl + ? WHERE id = ?";
+                            $stmt = $db->prepare($query);
+                            $stmt->execute([$deposit['amount'], $deposit['user_id']]);
+                        }
                     }
                     
                     $db->commit();
-                    $success = "Para yatırma onaylandı ve kullanıcı bakiyesi güncellendi!";
+                    // Başarılı işlem sonrası yönlendir (form tekrar gönderimini önlemek için)
+                    header('Location: admin_deposits.php?success=approved');
+                    exit();
                 } catch (Exception $e) {
                     $db->rollback();
                     $error = "İşlem sırasında hata oluştu: " . $e->getMessage();
@@ -87,11 +98,22 @@ if ($_POST) {
             $query = "UPDATE deposits SET status = 'rejected', processed_at = NOW() WHERE id = ?";
             $stmt = $db->prepare($query);
             if ($stmt->execute([$deposit_id])) {
-                $success = "Para yatırma talebi reddedildi!";
+                // Başarılı işlem sonrası yönlendir (form tekrar gönderimini önlemek için)
+                header('Location: admin_deposits.php?success=rejected');
+                exit();
             } else {
                 $error = "İşlem sırasında hata oluştu!";
             }
         }
+    }
+}
+
+// URL'den gelen success mesajını kontrol et
+if (isset($_GET['success'])) {
+    if ($_GET['success'] === 'approved') {
+        $success = "Para yatırma onaylandı ve kullanıcı bakiyesi güncellendi!";
+    } elseif ($_GET['success'] === 'rejected') {
+        $success = "Para yatırma talebi reddedildi!";
     }
 }
 
