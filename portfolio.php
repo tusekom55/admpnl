@@ -734,6 +734,9 @@ include 'includes/header.php';
                                         <?php 
                                         $transaction_type = $transaction['type'];
                                         
+                                        // DEBUG: Log transaction type to see what we're actually getting
+                                        error_log("PORTFOLIO DEBUG: Transaction type = '" . $transaction_type . "'");
+                                        
                                         // More accurate transaction type display that distinguishes leverage operations
                                         $display_text = '';
                                         $badge_class = 'bg-info';
