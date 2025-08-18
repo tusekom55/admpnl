@@ -118,6 +118,7 @@ $total_balance_usd = array_sum(array_column($users, 'balance_usd'));
     <title>Kullanıcı Yönetimi - Admin Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/admin-mobile.css" rel="stylesheet">
     <style>
         .stats-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
         .user-activity { font-size: 0.8em; color: #6c757d; }
@@ -242,6 +243,7 @@ $total_balance_usd = array_sum(array_column($users, 'balance_usd'));
                 <h5><i class="fas fa-list"></i> Kullanıcı Listesi (<?php echo count($users); ?> kullanıcı)</h5>
             </div>
             <div class="card-body">
+                <!-- Desktop Table View -->
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -324,6 +326,81 @@ $total_balance_usd = array_sum(array_column($users, 'balance_usd'));
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Mobile Card View -->
+                <div class="mobile-user-cards">
+                    <?php foreach ($users as $user): ?>
+                    <div class="mobile-user-card">
+                        <div class="mobile-user-header">
+                            <div class="user-avatar">
+                                <i class="fas fa-user-circle fa-3x text-primary"></i>
+                            </div>
+                            <div class="user-info">
+                                <h6>
+                                    <?php echo htmlspecialchars($user['username']); ?>
+                                    <?php if ($user['is_admin']): ?>
+                                        <span class="badge bg-danger ms-1">Admin</span>
+                                    <?php endif; ?>
+                                </h6>
+                                <small><?php echo htmlspecialchars($user['email']); ?></small><br>
+                                <small class="text-muted">ID: <?php echo $user['id']; ?> • <?php echo date('d.m.Y', strtotime($user['created_at'])); ?></small>
+                            </div>
+                        </div>
+                        
+                        <div class="mobile-user-details">
+                            <div class="mobile-detail-row">
+                                <span class="label">TL Bakiye:</span>
+                                <span class="value"><?php echo number_format($user['balance_tl'], 2); ?> TL</span>
+                            </div>
+                            <div class="mobile-detail-row">
+                                <span class="label">USD Bakiye:</span>
+                                <span class="value"><?php echo number_format($user['balance_usd'], 2); ?> USD</span>
+                            </div>
+                            <div class="mobile-detail-row">
+                                <span class="label">İşlemler:</span>
+                                <span class="value"><?php echo $user['transaction_count']; ?> işlem</span>
+                            </div>
+                            <div class="mobile-detail-row">
+                                <span class="label">Yatırma/Çekme:</span>
+                                <span class="value"><?php echo $user['deposit_count']; ?>/<?php echo $user['withdrawal_count']; ?></span>
+                            </div>
+                            <div class="mobile-detail-row">
+                                <span class="label">Portföy:</span>
+                                <span class="value"><?php echo $user['portfolio_positions']; ?> pozisyon</span>
+                            </div>
+                            <div class="mobile-detail-row">
+                                <span class="label">Son Aktivite:</span>
+                                <span class="value">
+                                    <?php if ($user['last_activity'] && $user['last_activity'] !== '1970-01-01 00:00:00'): ?>
+                                        <?php 
+                                        $days_ago = (strtotime('now') - strtotime($user['last_activity'])) / (60*60*24);
+                                        if ($days_ago < 1) {
+                                            echo 'Bugün';
+                                        } elseif ($days_ago < 7) {
+                                            echo round($days_ago) . ' gün önce';
+                                        } else {
+                                            echo date('d.m.Y', strtotime($user['last_activity']));
+                                        }
+                                        ?>
+                                    <?php else: ?>
+                                        Hiç aktivite yok
+                                    <?php endif; ?>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="mobile-user-actions">
+                            <button class="btn btn-primary" 
+                                    onclick="showBalanceModal(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars($user['username']); ?>', <?php echo $user['balance_tl']; ?>, <?php echo $user['balance_usd']; ?>)">
+                                <i class="fas fa-wallet"></i> Bakiye Düzenle
+                            </button>
+                            <a href="admin_user_detail.php?id=<?php echo $user['id']; ?>" class="btn btn-info">
+                                <i class="fas fa-eye"></i> Detaylar
+                            </a>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
