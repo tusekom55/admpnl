@@ -868,10 +868,24 @@ if (!in_array($current_page, $public_pages)) {
                     <?php if (isLoggedIn()): ?>
                         <!-- Admin Button (only for admin users) -->
                         <?php 
-                        // Simplified admin check
+                        // Proper admin detection
                         $isAdmin = false;
                         if (isset($_SESSION['user_id'])) {
-                            $isAdmin = true; // TEMPORARY - show to all logged in users for testing
+                            try {
+                                $database = new Database();
+                                $db = $database->getConnection();
+                                $query = "SELECT is_admin FROM users WHERE user_id = ?";
+                                $stmt = $db->prepare($query);
+                                $stmt->execute([$_SESSION['user_id']]);
+                                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                                
+                                if ($user && $user['is_admin'] == 1) {
+                                    $isAdmin = true;
+                                }
+                            } catch (Exception $e) {
+                                // Error in admin check - default to false for security
+                                $isAdmin = false;
+                            }
                         }
                         ?>
                         
