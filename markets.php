@@ -698,158 +698,270 @@ foreach($_SESSION as $session_key => $session_value) {
     }
 }
 
-/* MODAL OPTİMİZASYONU - RESPONSIVE SIZING */
-/* AL/SAT Modal - Mobil ve masaüstü için optimize edildi */
-.modal-responsive {
-    max-width: 450px !important;
+/* MODAL OPTİMİZASYONU - ULTRA AGGRESSIVE RESPONSIVE SIZING */
+/* Bootstrap override için ultra yüksek specificity */
+
+/* AL/SAT Modal - Maksimum agresif optimizasyon */
+#tradeModal.modal .modal-dialog.modal-responsive,
+.modal#tradeModal .modal-dialog.modal-responsive,
+div#tradeModal .modal-dialog.modal-responsive {
+    max-width: 420px !important;
+    width: 420px !important;
     margin: 1rem auto !important;
 }
 
-/* Mobil optimizasyonu */
-@media (max-width: 768px) {
-    .modal-responsive {
-        max-width: 90% !important;
+/* Mobil cihazlar için ultra agresif optimizasyon */
+@media screen and (max-width: 768px) {
+    /* Modal dialog zorla küçültme */
+    #tradeModal.modal .modal-dialog.modal-responsive,
+    .modal#tradeModal .modal-dialog.modal-responsive,
+    div#tradeModal .modal-dialog.modal-responsive,
+    #tradeModal .modal-dialog,
+    .modal#tradeModal .modal-dialog {
+        max-width: 85vw !important;
+        width: 85vw !important;
         margin: 0.5rem auto !important;
+        transform: none !important;
     }
     
-    .modal-responsive .modal-content {
-        border-radius: 15px !important;
+    /* Modal content agresif boyutlandırma */
+    #tradeModal .modal-content,
+    .modal#tradeModal .modal-content {
+        border-radius: 12px !important;
         margin: 0 !important;
-        max-height: 85vh !important;
+        max-height: 80vh !important;
+        height: auto !important;
         overflow: hidden !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
     }
     
-    .modal-responsive .modal-header {
+    /* Header compactness */
+    #tradeModal .modal-header,
+    .modal#tradeModal .modal-header {
         padding: 0.75rem !important;
         border-bottom: 1px solid #dee2e6 !important;
         flex-shrink: 0 !important;
+        min-height: auto !important;
     }
     
-    .modal-responsive .modal-body {
+    /* Body scrollable */
+    #tradeModal .modal-body,
+    .modal#tradeModal .modal-body {
         padding: 0.75rem !important;
         overflow-y: auto !important;
         flex: 1 !important;
-    }
-    
-    .modal-responsive .modal-title {
-        font-size: 1rem !important;
-    }
-    
-    /* Mobil dostu butonlar */
-    .modal-responsive .btn {
-        min-height: 44px !important;
-        font-size: 0.9rem !important;
-        font-weight: 600 !important;
-        padding: 0.5rem 1rem !important;
-    }
-    
-    /* Kompakt form girdileri */
-    .modal-responsive .form-control {
-        min-height: 44px !important;
-        font-size: 1rem !important;
-    }
-    
-    .modal-responsive .input-group-text {
-        min-height: 44px !important;
-        font-size: 0.9rem !important;
-    }
-    
-    .modal-responsive .card-body {
-        padding: 0.5rem !important;
-    }
-}
-
-/* KALDIRAÇ Modal - Daha büyük ama yine responsive */
-.modal-responsive-leverage {
-    max-width: 650px !important;
-    margin: 1rem auto !important;
-}
-
-@media (max-width: 768px) {
-    .modal-responsive-leverage {
-        max-width: 95% !important;
-        margin: 0.25rem auto !important;
-    }
-    
-    .modal-responsive-leverage .modal-content {
-        border-radius: 15px !important;
-        margin: 0 !important;
-        max-height: 90vh !important;
-        overflow: hidden !important;
-        display: flex !important;
-        flex-direction: column !important;
-    }
-    
-    .modal-responsive-leverage .modal-header {
-        padding: 0.75rem !important;
-        border-bottom: 1px solid #dee2e6 !important;
-        flex-shrink: 0 !important;
-    }
-    
-    .modal-responsive-leverage .modal-body {
-        padding: 0.75rem !important;
-        overflow-y: auto !important;
-        flex: 1 !important;
+        max-height: calc(80vh - 120px) !important;
         -webkit-overflow-scrolling: touch !important;
     }
     
-    .modal-responsive-leverage .modal-title {
-        font-size: 1rem !important;
+    /* Title sizing */
+    #tradeModal .modal-title,
+    .modal#tradeModal .modal-title {
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
     }
     
-    /* Mobil form sütunları */
-    .modal-responsive-leverage .row > .col-md-6 {
-        margin-bottom: 0.5rem !important;
-    }
-    
-    /* Mobil dostu butonlar */
-    .modal-responsive-leverage .btn {
-        min-height: 44px !important;
+    /* Button optimization */
+    #tradeModal .btn,
+    .modal#tradeModal .btn {
+        min-height: 42px !important;
         font-size: 0.85rem !important;
         font-weight: 600 !important;
         padding: 0.5rem 0.75rem !important;
+        border-radius: 8px !important;
     }
     
-    /* Kompakt form girdileri */
-    .modal-responsive-leverage .form-control,
-    .modal-responsive-leverage .form-select {
-        min-height: 44px !important;
+    /* Form control optimization */
+    #tradeModal .form-control,
+    .modal#tradeModal .form-control {
+        min-height: 42px !important;
         font-size: 0.9rem !important;
+        padding: 0.5rem 0.75rem !important;
+        border-radius: 8px !important;
     }
     
-    .modal-responsive-leverage .input-group-text {
-        min-height: 44px !important;
+    /* Input group optimization */
+    #tradeModal .input-group-text,
+    .modal#tradeModal .input-group-text {
+        min-height: 42px !important;
         font-size: 0.85rem !important;
+        padding: 0.5rem 0.75rem !important;
     }
     
-    /* Kompakt hesaplama kartları */
-    .modal-responsive-leverage .card-body {
+    /* Card body compact */
+    #tradeModal .card-body,
+    .modal#tradeModal .card-body {
         padding: 0.5rem !important;
     }
     
-    /* Daha iyi spacing */
-    .modal-responsive-leverage .row.text-center .col-6,
-    .modal-responsive-leverage .row.text-center .col-md-3 {
-        margin-bottom: 0.75rem !important;
-        padding: 0.25rem !important;
+    /* Label compact */
+    #tradeModal .form-label,
+    .modal#tradeModal .form-label {
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.25rem !important;
     }
     
-    /* Alert kutusu optimizasyonu */
-    .modal-responsive-leverage .alert {
-        padding: 0.5rem !important;
-        font-size: 0.8rem !important;
-        margin-top: 0.75rem !important;
-    }
-    
-    /* Kart başlıkları */
-    .modal-responsive-leverage .card-header h6 {
-        font-size: 0.9rem !important;
-        margin-bottom: 0 !important;
-    }
-    
-    /* Küçük metin */
-    .modal-responsive-leverage small {
+    /* Small text */
+    #tradeModal small,
+    .modal#tradeModal small {
         font-size: 0.75rem !important;
+    }
+}
+
+/* KALDIRAÇ Modal - Ultra agresif boyutlandırma */
+#leverageModal.modal .modal-dialog.modal-responsive-leverage,
+.modal#leverageModal .modal-dialog.modal-responsive-leverage,
+div#leverageModal .modal-dialog.modal-responsive-leverage {
+    max-width: 600px !important;
+    width: 600px !important;
+    margin: 1rem auto !important;
+}
+
+/* Mobil için ultra agresif kaldıraç modal optimizasyonu */
+@media screen and (max-width: 768px) {
+    /* Dialog zorla küçültme */
+    #leverageModal.modal .modal-dialog.modal-responsive-leverage,
+    .modal#leverageModal .modal-dialog.modal-responsive-leverage,
+    div#leverageModal .modal-dialog.modal-responsive-leverage,
+    #leverageModal .modal-dialog,
+    .modal#leverageModal .modal-dialog {
+        max-width: 92vw !important;
+        width: 92vw !important;
+        margin: 0.25rem auto !important;
+        transform: none !important;
+    }
+    
+    /* Content full height management */
+    #leverageModal .modal-content,
+    .modal#leverageModal .modal-content {
+        border-radius: 12px !important;
+        margin: 0 !important;
+        max-height: 85vh !important;
+        height: auto !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+    }
+    
+    /* Header compact */
+    #leverageModal .modal-header,
+    .modal#leverageModal .modal-header {
+        padding: 0.75rem !important;
+        border-bottom: 1px solid #dee2e6 !important;
+        flex-shrink: 0 !important;
+        min-height: auto !important;
+    }
+    
+    /* Body scrollable with touch */
+    #leverageModal .modal-body,
+    .modal#leverageModal .modal-body {
+        padding: 0.5rem !important;
+        overflow-y: auto !important;
+        flex: 1 !important;
+        max-height: calc(85vh - 140px) !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Title compact */
+    #leverageModal .modal-title,
+    .modal#leverageModal .modal-title {
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Form row spacing */
+    #leverageModal .row > .col-md-6,
+    .modal#leverageModal .row > .col-md-6 {
+        margin-bottom: 0.5rem !important;
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+    }
+    
+    /* Button optimization */
+    #leverageModal .btn,
+    .modal#leverageModal .btn {
+        min-height: 40px !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        padding: 0.4rem 0.6rem !important;
+        border-radius: 8px !important;
+    }
+    
+    /* Form controls compact */
+    #leverageModal .form-control,
+    #leverageModal .form-select,
+    .modal#leverageModal .form-control,
+    .modal#leverageModal .form-select {
+        min-height: 40px !important;
+        font-size: 0.85rem !important;
+        padding: 0.4rem 0.6rem !important;
+        border-radius: 8px !important;
+    }
+    
+    /* Input group compact */
+    #leverageModal .input-group-text,
+    .modal#leverageModal .input-group-text {
+        min-height: 40px !important;
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.6rem !important;
+    }
+    
+    /* Card bodies compact */
+    #leverageModal .card-body,
+    .modal#leverageModal .card-body {
+        padding: 0.4rem !important;
+    }
+    
+    /* Grid spacing */
+    #leverageModal .row.text-center .col-6,
+    #leverageModal .row.text-center .col-md-3,
+    .modal#leverageModal .row.text-center .col-6,
+    .modal#leverageModal .row.text-center .col-md-3 {
+        margin-bottom: 0.5rem !important;
+        padding: 0.2rem !important;
+    }
+    
+    /* Alert compact */
+    #leverageModal .alert,
+    .modal#leverageModal .alert {
+        padding: 0.4rem !important;
+        font-size: 0.75rem !important;
+        margin-top: 0.5rem !important;
+        border-radius: 8px !important;
+    }
+    
+    /* Card headers */
+    #leverageModal .card-header h6,
+    .modal#leverageModal .card-header h6 {
+        font-size: 0.85rem !important;
+        margin-bottom: 0 !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Small text */
+    #leverageModal small,
+    .modal#leverageModal small {
+        font-size: 0.7rem !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* Form labels */
+    #leverageModal .form-label,
+    .modal#leverageModal .form-label {
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.25rem !important;
+    }
+    
+    /* Make two-column form single column on very small screens */
+    @media screen and (max-width: 400px) {
+        #leverageModal .row > .col-md-6,
+        .modal#leverageModal .row > .col-md-6 {
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+        }
     }
 }
 
